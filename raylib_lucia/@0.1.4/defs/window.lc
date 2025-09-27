@@ -1,0 +1,226 @@
+private final init_window_c: &int = libload.get_fn(lib, "InitWindow", [
+    "int", "int", "str"
+], "void")
+private final close_window_c: &int = libload.get_fn(lib, "CloseWindow", [], "void")
+private final window_should_close_c: &int = libload.get_fn(lib, "WindowShouldClose", [], "int")
+private final is_window_ready_c: &int = libload.get_fn(lib, "IsWindowReady", [], "int")
+private final is_window_minimized_c: &int = libload.get_fn(lib, "IsWindowMinimized", [], "int")
+private final is_window_maximized_c: &int = libload.get_fn(lib, "IsWindowMaximized", [], "int")
+private final is_window_focused_c: &int = libload.get_fn(lib, "IsWindowFocused", [], "int")
+private final is_window_resized_c: &int = libload.get_fn(lib, "IsWindowResized", [], "int")
+private final is_window_hidden_c: &int = libload.get_fn(lib, "IsWindowHidden", [], "int")
+private final is_window_fullscreen_c: &int = libload.get_fn(lib, "IsWindowFullscreen", [], "int")
+private final toggle_fullscreen_c: &int = libload.get_fn(lib, "ToggleFullscreen", [], "void")
+private final maximize_window_c: &int = libload.get_fn(lib, "MaximizeWindow", [], "void")
+private final minimize_window_c: &int = libload.get_fn(lib, "MinimizeWindow", [], "void")
+private final restore_window_c: &int = libload.get_fn(lib, "RestoreWindow", [], "void")
+private final set_window_title_c: &int = libload.get_fn(lib, "SetWindowTitle", ["str"], "void")
+private final set_window_position_c: &int = libload.get_fn(lib, "SetWindowPosition", ["int", "int"], "void")
+private final set_window_monitor_c: &int = libload.get_fn(lib, "SetWindowMonitor", ["int"], "void")
+
+public final fun init_window(
+    width: int,
+    height: int,
+    title: str,
+) -> void:
+    /// Initializes a window and OpenGL context.
+    ///     @param width: int - The width of the window.
+    ///     @param height: int - The height of the window.
+    ///     @param title: str - The title of the window.
+    ///     @return: void - No return value.
+    if (init_window_c == null):
+        throw "Function 'init_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _title: &int = libload.create_str_ptr(title)
+    if (_title == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(init_window_c, [width, height, _title])
+    return null
+end
+
+public final fun close_window() -> void:
+    /// Closes the window and unloads OpenGL context.
+    ///     @return: void - No return value.
+    if (close_window_c == null):
+        throw "Function 'close_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(close_window_c, [])
+    return null
+end
+
+public final fun window_should_close() -> bool:
+    /// Checks if the window should close (if the close button was pressed).
+    ///     @return: bool - True if the window should close, false otherwise.
+    if (window_should_close_c == null):
+        throw "Function 'window_should_close' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(window_should_close_c, [])
+    return result != 0
+end
+
+public final fun is_window_ready() -> bool:
+    /// Checks if the window has been initialized successfully.
+    ///     @return: bool - True if the window is ready, false otherwise.
+    if (is_window_ready_c == null):
+        throw "Function 'is_window_ready' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_ready_c, [])
+    return result != 0
+end
+
+public final fun is_window_minimized() -> bool:
+    /// Checks if the window is currently minimized.
+    ///     @return: bool - True if the window is minimized, false otherwise.
+    if (is_window_minimized_c == null):
+        throw "Function 'is_window_minimized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_minimized_c, [])
+    return result != 0
+end
+
+public final fun is_window_maximized() -> bool:
+    /// Checks if the window is currently maximized.
+    ///     @return: bool - True if the window is maximized, false otherwise.
+    if (is_window_maximized_c == null):
+        throw "Function 'is_window_maximized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_maximized_c, [])
+    return result != 0
+end
+
+public final fun is_window_focused() -> bool:
+    /// Checks if the window is currently focused.
+    ///     @return: bool - True if the window is focused, false otherwise.
+    if (is_window_focused_c == null):
+        throw "Function 'is_window_focused' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_focused_c, [])
+    return result != 0
+end
+
+public final fun is_window_resized() -> bool:
+    /// Checks if the window has been resized.
+    ///     @return: bool - True if the window has been resized, false otherwise.
+    if (is_window_resized_c == null):
+        throw "Function 'is_window_resized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_resized_c, [])
+    return result != 0
+end
+
+public final fun is_window_hidden() -> bool:
+    /// Checks if the window is currently hidden.
+    ///     @return: bool - True if the window is hidden, false otherwise.
+    if (is_window_hidden_c == null):
+        throw "Function 'is_window_hidden' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_hidden_c, [])
+    return result != 0
+end
+
+public final fun is_window_fullscreen() -> bool:
+    /// Checks if the window is currently in fullscreen mode.
+    ///     @return: bool - True if the window is fullscreen, false otherwise.
+    if (is_window_fullscreen_c == null):
+        throw "Function 'is_window_fullscreen' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(is_window_fullscreen_c, [])
+    return result != 0
+end
+
+public final fun toggle_fullscreen() -> void:
+    /// Toggles the window between fullscreen and windowed mode.
+    ///     @return: void - No return value.
+    if (toggle_fullscreen_c == null):
+        throw "Function 'toggle_fullscreen' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(toggle_fullscreen_c, [])
+    return null
+end
+
+public final fun maximize_window() -> void:
+    /// Maximizes the window.
+    ///     @return: void - No return value.
+    if (maximize_window_c == null):
+        throw "Function 'maximize_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(maximize_window_c, [])
+    return null
+end
+
+public final fun minimize_window() -> void:
+    /// Minimizes the window.
+    ///     @return: void - No return value.
+    if (minimize_window_c == null):
+        throw "Function 'minimize_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(minimize_window_c, [])
+    return null
+end
+
+public final fun restore_window() -> void:
+    /// Restores the window to its previous size and position.
+    ///     @return: void - No return value.
+    if (restore_window_c == null):
+        throw "Function 'restore_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(restore_window_c, [])
+    return null
+end
+
+public final fun set_window_title(title: str) -> void:
+    /// Sets the title of the window.
+    ///     @param title: str - The new title for the window.
+    ///     @return: void - No return value.
+    if (set_window_title_c == null):
+        throw "Function 'set_window_title' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _title: &int = libload.create_str_ptr(title)
+    if (_title == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(set_window_title_c, [_title])
+    return null
+end
+
+public final fun set_window_position(x: int, y: int) -> void:
+    /// Sets the position of the window on the screen.
+    ///     @param x: int - The x position of the window.
+    ///     @param y: int - The y position of the window.
+    ///     @return: void - No return value.
+    if (set_window_position_c == null):
+        throw "Function 'set_window_position' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_position_c, [x, y])
+    return null
+end
+
+public final fun set_window_monitor(monitor: int) -> void:
+    /// Sets the monitor for the window (fullscreen mode).
+    ///     @param monitor: int - The monitor index (0 for primary, 1 for secondary, etc.).
+    ///     @return: void - No return value.
+    if (set_window_monitor_c == null):
+        throw "Function 'set_window_monitor' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_monitor_c, [monitor])
+    return null
+end
+
+public final InitWindow: &int = init_window
+public final CloseWindow: &int = close_window
+public final WindowShouldClose: &int = window_should_close
+public final IsWindowReady: &int = is_window_ready
+public final IsWindowMinimized: &int = is_window_minimized
+public final IsWindowMaximized: &int = is_window_maximized
+public final IsWindowFocused: &int = is_window_focused
+public final IsWindowResized: &int = is_window_resized
+public final IsWindowHidden: &int = is_window_hidden
+public final IsWindowFullscreen: &int = is_window_fullscreen
+public final ToggleFullscreen: &int = toggle_fullscreen
+public final MaximizeWindow: &int = maximize_window
+public final MinimizeWindow: &int = minimize_window
+public final RestoreWindow: &int = restore_window
+public final SetWindowTitle: &int = set_window_title
+public final SetWindowPosition: &int = set_window_position
+public final SetWindowMonitor: &int = set_window_monitor
