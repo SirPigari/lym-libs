@@ -1,0 +1,63 @@
+name: raylib-@0.1.6-build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build raylib_lucia
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install GCC on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y gcc make
+
+      - name: Install GCC on macOS
+        if: runner.os == 'macOS'
+        run: brew install gcc
+
+      - name: Install GCC on Windows
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: mingw-w64-x86_64-gcc
+
+      - name: Create build directories
+        run: |
+          mkdir -p raylib_lucia/@0.1.6/lib
+          mkdir -p raylib_lucia/@0.1.6/lib/binding
+
+      - name: Copy source files
+        run: |
+          cp -r lib/binding/* raylib_lucia/@0.1.6/lib/binding/
+          cp -r lib/* raylib_lucia/@0.1.6/lib/
+
+      - name: Build raylib_lucia
+        working-directory: raylib_lucia/@0.1.6
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+              gcc -o lib/raylib_lucia.dll lib/binding/raylib_lucia_bindings.c -I./lib/binding ./lib/raylib_windows.a -static
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+              gcc -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -I./lib/binding ./lib/raylib_linux.a -static
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+              gcc -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -I./lib/binding ./lib/raylib_macos.a -static
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: raylib_lucia-${{ runner.os }}
+          path: |
+            raylib_lucia/@0.1.6/lib/raylib_lucia.dll
+            raylib_lucia/@0.1.6/lib/raylib_lucia.so
+            raylib_lucia/@0.1.6/lib/raylib_lucia.dylib
