@@ -1,0 +1,64 @@
+private final get_random_value_c: &int = libload.get_fn(lib, "GetRandomValue", ["int", "int"], "int")
+private final set_target_fps_c: &int = libload.get_fn(lib, "SetTargetFPS", ["int"], "void")
+private final get_fps_c: &int = libload.get_fn(lib, "GetFPS", [], "int")
+private final get_frame_time_c: &int = libload.get_fn(lib, "GetFrameTime", [], "float")
+private final get_time_c: &int = libload.get_fn(lib, "GetTime", [], "float")
+
+public final fun get_random_value(min: int, max: int) -> int:
+    /// Returns a random integer value between min and max (inclusive).
+    ///     @param min: int - The minimum value.
+    ///     @param max: int - The maximum value.
+    ///     @return: int - A random integer between min and max.
+    if (get_random_value_c == null):
+        throw "Function 'get_random_value' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(get_random_value_c, [min, max])
+    return result
+end
+
+public final fun set_target_fps(fps: int) -> void:
+    /// Sets the target frames-per-second (FPS) for the application.
+    ///     @param fps: int - The desired FPS.
+    ///     @return: void - No return value.
+    if (set_target_fps_c == null):
+        throw "Function 'set_target_fps' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_target_fps_c, [fps])
+    return null
+end
+
+public final fun get_fps() -> int:
+    /// Returns the current frames-per-second (FPS).
+    ///     @return: int - The current FPS.
+    if (get_fps_c == null):
+        throw "Function 'get_fps' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(get_fps_c, [])
+    return result
+end
+
+public final fun get_frame_time() -> float:
+    /// Returns the time in seconds for the last frame drawn.
+    ///     @return: float - The time in seconds for the last frame.
+    if (get_frame_time_c == null):
+        throw "Function 'get_frame_time' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: float = libload.call_fn(get_frame_time_c, [])
+    return result
+end
+
+public final fun get_time() -> float:
+    /// Returns the total time in seconds since the window was initialized.
+    ///     @return: float - The total time in seconds since InitWindow.
+    if (get_time_c == null):
+        throw "Function 'get_time' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: float = libload.call_fn(get_time_c, [])
+    return result
+end
+
+public final GetRandomValue: &int = get_random_value
+public final SetTargetFPS: &int = set_target_fps
+public final GetFPS: &int = get_fps
+public final GetFrameTime: &float = get_frame_time
+public final GetTime: &float = get_time
