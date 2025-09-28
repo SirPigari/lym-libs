@@ -61,7 +61,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         working-directory: raylib_lucia/@0.1.6
-        run: gcc -o lib/raylib_lucia.dll lib/binding/raylib_lucia_bindings.c -I./lib/binding ./lib/raylib_windows.a -static
+        run: gcc -shared -o lib/raylib_lucia.dll \
+                lib/binding/raylib_lucia_bindings.c \
+                -I./lib/binding ./lib/raylib_windows.a \
+                -lgdi32 -luser32 -lkernel32 -lopengl32 -lshell32 -luuid -lwinmm -lcomdlg32 -ladvapi32
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
