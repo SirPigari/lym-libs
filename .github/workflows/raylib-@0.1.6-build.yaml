@@ -20,7 +20,7 @@ jobs:
 
       - name: Install GCC on Linux
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y gcc make
+        run: sudo apt-get update && sudo apt-get install -y gcc make libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libgl1-mesa-dev
 
       - name: Install GCC on macOS
         if: runner.os == 'macOS'
@@ -39,7 +39,8 @@ jobs:
         run: gcc -o lib/raylib_lucia.so \
                 lib/binding/raylib_lucia_bindings.c \
                 -I./lib/binding ./lib/raylib_linux.a \
-                -static -fPIC -lm -lX11
+                -fPIC -lm -lX11 -lGL -lGLU -ldl -lpthread
+
 
       - name: Build raylib_lucia on macOS
         if: runner.os == 'macOS'
