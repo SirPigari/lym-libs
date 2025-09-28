@@ -20,7 +20,7 @@ jobs:
 
       - name: Install GCC on Linux
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y gcc make libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libgl1-mesa-dev
+        run: sudo apt-get update && sudo apt-get install -y gcc make libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev
 
       - name: Install GCC on macOS
         if: runner.os == 'macOS'
