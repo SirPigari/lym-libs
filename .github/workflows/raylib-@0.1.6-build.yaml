@@ -41,7 +41,12 @@ jobs:
       - name: Build raylib_lucia on macOS
         if: runner.os == 'macOS'
         working-directory: raylib_lucia/@0.1.6
-        run: gcc -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -I./lib/binding ./lib/raylib_macos.a
+        run: |
+            gcc -dynamiclib -o lib/raylib_lucia.dylib \
+            lib/binding/raylib_lucia_bindings.c \
+            -I./lib/binding ./lib/raylib_macos.a \
+            -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreFoundation -framework OpenGL
+
 
       - name: Build raylib_lucia on Windows
         if: runner.os == 'Windows'
