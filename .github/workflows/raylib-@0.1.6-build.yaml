@@ -33,16 +33,6 @@ jobs:
           update: true
           install: mingw-w64-x86_64-gcc
 
-      - name: Create build directories
-        run: |
-          mkdir -p raylib_lucia/@0.1.6/lib
-          mkdir -p raylib_lucia/@0.1.6/lib/binding
-
-      - name: Copy source files
-        run: |
-          cp -r lib/binding/* raylib_lucia/@0.1.6/lib/binding/
-          cp -r lib/* raylib_lucia/@0.1.6/lib/
-
       - name: Build raylib_lucia
         working-directory: raylib_lucia/@0.1.6
         run: |
