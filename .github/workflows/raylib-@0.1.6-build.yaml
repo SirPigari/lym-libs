@@ -32,6 +32,12 @@ jobs:
         with:
           update: true
           install: mingw-w64-x86_64-gcc
+          
+      - name: List binding folder
+        if: runner.os == 'Linux'
+        working-directory: raylib_lucia/@0.1.6
+        run: ls -R lib/binding
+
 
       - name: Build raylib_lucia on Linux
         if: runner.os == 'Linux'
