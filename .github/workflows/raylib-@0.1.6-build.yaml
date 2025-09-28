@@ -45,7 +45,7 @@ jobs:
             gcc -o lib/raylib_lucia.so \
             lib/binding/raylib_lucia_bindings.c \
             -I./lib/binding ./lib/raylib_linux.a \
-            -fPIC -lm -lX11 -lGL -lGLU -ldl -lpthread
+            -fPIC -lm -lX11 -lGL -lGLU -ldl -lpthread --shared
 
       - name: Build raylib_lucia on macOS
         if: runner.os == 'macOS'
