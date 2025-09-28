@@ -1,4 +1,4 @@
-name: raylib-@0.1.6-build
+name: raylib-0.1.6-build
 
 on:
   push:
@@ -18,14 +18,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Linux dependencies
       - name: Install GCC on Linux
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y gcc make libx11-dev libxcursor-dev libxrandr-dev libxi-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev
 
+      # macOS dependencies
       - name: Install GCC on macOS
         if: runner.os == 'macOS'
         run: brew install gcc
 
+      # Windows dependencies
       - name: Install GCC on Windows
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
@@ -33,36 +36,49 @@ jobs:
           update: true
           install: mingw-w64-x86_64-gcc
 
+      # Workaround for Windows @0.1.6 folder
+      - name: Prepare Windows build folder
+        if: runner.os == 'Windows'
+        shell: bash
+        run: cp -r raylib_lucia/@0.1.6 raylib_lucia/build_tmp
+
+      # Linux build
       - name: Build raylib_lucia on Linux
         if: runner.os == 'Linux'
         working-directory: raylib_lucia/@0.1.6
         run: |
-            gcc -o lib/raylib_lucia.so \
+          gcc -shared -fPIC -o lib/raylib_lucia.so \
             lib/binding/raylib_lucia_bindings.c \
             -I./lib/binding ./lib/raylib_linux.a \
-            -fPIC -lm -lX11 -lGL -lGLU -ldl -lpthread --shared
+            -lm -lX11 -lGL -lGLU -ldl -lpthread
 
+      # macOS build
       - name: Build raylib_lucia on macOS
         if: runner.os == 'macOS'
         working-directory: raylib_lucia/@0.1.6
         run: |
-            gcc -dynamiclib -o lib/raylib_lucia.dylib \
+          gcc -dynamiclib -o lib/raylib_lucia.dylib \
             lib/binding/raylib_lucia_bindings.c \
             -I./lib/binding ./lib/raylib_macos.a \
             -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreFoundation -framework OpenGL
 
-
+      # Windows build
       - name: Build raylib_lucia on Windows
         if: runner.os == 'Windows'
         shell: bash
-        working-directory: raylib_lucia/@0.1.6
-        run: gcc -shared -o lib/raylib_lucia.dll \
-                "lib/binding/raylib_lucia_bindings.c" \
-                -I"./lib/binding" ./lib/raylib_windows.a \
-                -lgdi32 -luser32 -lkernel32 -lopengl32 -lshell32 -luuid -lwinmm -lcomdlg32 -ladvapi32
+        working-directory: raylib_lucia/build_tmp
+        run: |
+          gcc -shared -o lib/raylib_lucia.dll \
+            lib/binding/raylib_lucia_bindings.c \
+            -I./lib/binding ./lib/raylib_windows.a \
+            -lgdi32 -luser32 -lkernel32 -lopengl32 -lshell32 -luuid -lwinmm -lcomdlg32 -ladvapi32
 
+      # Upload artifacts
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: raylib_lucia-${{ runner.os }}
-          path: raylib_lucia/@0.1.6/lib/raylib_lucia.*
+          path: |
+            raylib_lucia/@0.1.6/lib/raylib_lucia.so
+            raylib_lucia/@0.1.6/lib/raylib_lucia.dylib
+            raylib_lucia/build_tmp/lib/raylib_lucia.dll
