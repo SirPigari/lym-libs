@@ -28,20 +28,6 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install gcc
 
-      # Windows dependencies
-      - name: Install GCC on Windows
-        if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: mingw-w64-x86_64-gcc
-
-      # Workaround for Windows @0.1.6 folder
-      - name: Prepare Windows build folder
-        if: runner.os == 'Windows'
-        shell: bash
-        run: cp -r raylib_lucia/@0.1.6 raylib_lucia/build_tmp
-
       # Linux build
       - name: Build raylib_lucia on Linux
         if: runner.os == 'Linux'
@@ -62,16 +48,6 @@ jobs:
             -I./lib/binding ./lib/raylib_macos.a \
             -framework Cocoa -framework IOKit -framework CoreVideo -framework CoreFoundation -framework OpenGL
 
-      # Windows build
-      - name: Build raylib_lucia on Windows
-        if: runner.os == 'Windows'
-        shell: pwsh
-        working-directory: raylib_lucia/@0.1.6
-        run: |
-            Get-ChildItem -Recurse lib
-            gcc -shared -o lib/raylib_lucia.dll lib/binding/raylib_lucia_bindings.c -I./lib/binding -L./lib -lraylib
-
-
       # Upload artifacts
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -80,4 +56,3 @@ jobs:
           path: |
             raylib_lucia/@0.1.6/lib/raylib_lucia.so
             raylib_lucia/@0.1.6/lib/raylib_lucia.dylib
-            raylib_lucia/build_tmp/lib/raylib_lucia.dll
