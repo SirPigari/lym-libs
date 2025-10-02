@@ -30,6 +30,12 @@ private final set_mouse_offset_c: &int = libload.get_fn(lib, "SetMouseOffset", [
 private final set_mouse_scale_c: &int = libload.get_fn(lib, "SetMouseScale", ["float", "float"], "void")
 private final get_mouse_wheel_move_c: &int = libload.get_fn(lib, "GetMouseWheelMove", [], "float")
 private final set_mouse_cursor_c: &int = libload.get_fn(lib, "SetMouseCursor", ["int"], "void")
+private final show_cursor_c: &int = libload.get_fn(lib, "ShowCursor", [], "void")
+private final hide_cursor_c: &int = libload.get_fn(lib, "HideCursor", [], "void")
+private final is_cursor_hidden_c: &int = libload.get_fn(lib, "IsCursorHidden", [], "bool")
+private final is_cursor_on_screen_c: &int = libload.get_fn(lib, "IsCursorOnScreen", [], "bool")
+private final enable_cursor_c: &int = libload.get_fn(lib, "EnableCursor", [], "void")
+private final disable_cursor_c: &int = libload.get_fn(lib, "DisableCursor", [], "void")
 
 private final get_touch_x_c: &int = libload.get_fn(lib, "GetTouchX", [], "int")
 private final get_touch_y_c: &int = libload.get_fn(lib, "GetTouchY", [], "int")
@@ -557,6 +563,64 @@ scope (*):
         libload.call_fn(set_mouse_cursor_c, [cursor])
         return null
     end
+
+    public final fun show_cursor() -> void:
+        /// Shows the mouse cursor.
+        ///     @return: void - No return value.
+        if (show_cursor_c == null):
+            throw "Function 'show_cursor' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(show_cursor_c, [])
+        return null
+    end
+
+    public final fun hide_cursor() -> void:
+        /// Hides the mouse cursor.
+        ///     @return: void - No return value.
+        if (hide_cursor_c == null):
+            throw "Function 'hide_cursor' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(hide_cursor_c, [])
+        return null
+    end
+
+    public final fun is_cursor_hidden() -> bool:
+        /// Returns true if the mouse cursor is not visible.
+        ///     @return: bool - true if the cursor is hidden, false otherwise.
+        if (is_cursor_hidden_c == null):
+            throw "Function 'is_cursor_hidden' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        return libload.call_fn(is_cursor_hidden_c, []) as bool
+    end
+
+    public final fun is_cursor_on_screen() -> bool:
+        /// Returns true if the mouse cursor is inside the screen.
+        ///     @return: bool - true if the cursor is on the screen, false otherwise.
+        if (is_cursor_on_screen_c == null):
+            throw "Function 'is_cursor_on_screen' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        return libload.call_fn(is_cursor_on_screen_c, []) as bool
+    end
+
+    public final fun enable_cursor() -> void:
+        /// Enables the mouse cursor (unlock cursor).
+        ///     @return: void - No return value.
+        if (enable_cursor_c == null):
+            throw "Function 'enable_cursor' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(enable_cursor_c, [])
+        return null
+    end
+
+    public final fun disable_cursor() -> void:
+        /// Disables the mouse cursor (lock cursor).
+        ///     @return: void - No return value.
+        if (disable_cursor_c == null):
+            throw "Function 'disable_cursor' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(disable_cursor_c, [])
+        return null
+    end
 end
 
 // Touch input functions
@@ -777,7 +841,13 @@ scope (*):
     public final GetMousePosition: function = get_mouse_position
     public final GetMouseDelta: function = get_mouse_delta
     public final GetMouseWheelMoveV: function = get_mouse_wheel_move_v
-    
+    public final ShowCursor: function = show_cursor
+    public final HideCursor: function = hide_cursor
+    public final IsCursorHidden: function = is_cursor_hidden
+    public final IsCursorOnScreen: function = is_cursor_on_screen
+    public final EnableCursor: function = enable_cursor
+    public final DisableCursor: function = disable_cursor
+
     // Touch input functions
     public final GetTouchX: function = get_touch_x
     public final GetTouchY: function = get_touch_y

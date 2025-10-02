@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #if defined(_WIN32)
     #if defined(__TINYC__)
@@ -21,6 +22,9 @@
 #ifndef RLAPI
     #define RLAPI
 #endif
+
+// audio stuff
+#include "audio.c"
 
 // void SetWindowIcon(Image image);
 RLAPI void bind_SetWindowIcon(const char *path) {

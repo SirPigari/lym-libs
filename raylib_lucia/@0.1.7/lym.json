@@ -1,0 +1,6 @@
+{
+    "ignore": [
+        "lib/*.a",
+        "lib/bindings/*"
+    ]
+}

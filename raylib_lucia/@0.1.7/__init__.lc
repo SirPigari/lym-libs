@@ -59,31 +59,9 @@ end
 #include "defs/text.lc"
 #include "defs/drawing.lc"
 #include "defs/input.lc"
+#include "defs/audio.lc"
 #include "defs/colors.lc"
 
 // Clean up
 lib = libload.unload_lib(lib)
 lib_lucia = libload.unload_lib(lib_lucia)
-
-#config allow_unsafe = true
-#config debug = false
-
-SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_WINDOW_ALWAYS_RUN)
-InitWindow(800, 450, "raylib [lucia] example - basic window")
-SetTargetFPS(60)
-
-while (!WindowShouldClose()):
-    if IsKeyPressed(KEY_F5):
-        ToggleMaximize()
-    end
-
-    if IsKeyPressed(KEY_F11):
-        ToggleFullscreen()
-    end
-
-    BeginDrawing()
-    ClearBackground(RAYWHITE)
-    DrawTriangle((250, 100), (200, 200), (300, 200), MAROON)
-    DrawText(f"{GetWindowPosition()} - {GetClipboardText()}", 10, 10, 20, DARKGRAY)
-    EndDrawing()
-end
