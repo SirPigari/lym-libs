@@ -1,6 +1,6 @@
 {
     "name": "raylib_lucia",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "required_lucia_version": "^2.0.0",
     "description": "Raylib bindings for Lucia.",
     "authors": [

@@ -2,5 +2,25 @@
     "ignore": [
         "lib/*.a",
         "lib/bindings/*"
-    ]
+    ],
+    "entry": "__init__.lc",
+    "supported_platforms": [
+        "windows",
+        "linux",
+        "macos"
+    ],
+    "platform_ignore": {
+        "windows": [
+            "lib/lib*.so",
+            "lib/lib*.dylib"
+        ],
+        "linux": [
+            "lib/*.dll",
+            "lib/*.dylib"
+        ],
+        "macos": [
+            "lib/*.dll",
+            "lib/*.so"
+        ]
+    }
 }

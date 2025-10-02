@@ -8,7 +8,7 @@ import fs
 // Currently in development. Only a subset of functions are implemented.
 
 public final RAYLIB_VERSION: str = "5.5.0"
-public final RAYLIB_LUCIA_VERSION: str = "0.1.5"
+public final RAYLIB_LUCIA_VERSION: str = "0.1.6"
 
 private mutable lib: ?&int = null
 private mutable lib_lucia: ?&int = null
