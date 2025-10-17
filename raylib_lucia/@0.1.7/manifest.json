@@ -6,7 +6,7 @@
     "authors": [
         "Markofwitch"
     ],
-    "entry_point": "__init__.lc",
+    "entry_point": "main.lc",
     "dependencies": {
         "os": "^1.0.0",
         "libload": "^1.0.0",
