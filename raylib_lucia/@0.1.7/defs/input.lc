@@ -799,6 +799,147 @@ scope (*):
         vec: tuple[float, float] = result.split("|").map((v) => v.to_float()).collect()
         return vec
     end
+
+    public final fun get_key_name(key: int) -> str:
+        /// Returns a string representation of the given key constant.
+        ///     @param key: int - The key constant (use KEY_* constants).
+        ///     @return: str - The string representation of the key.
+        ///     @note: This is for the raylib@5.5.0 patch
+        match (key):
+            KEY_NULL: return "NONE",
+
+            // Android special buttons
+            KEY_BACK: return "BACK",
+            KEY_MENU: return "MENU",
+            KEY_VOLUME_UP: return "VOLUME UP",
+            KEY_VOLUME_DOWN: return "VOLUME DOWN",
+
+            // Symbols
+            KEY_APOSTROPHE: return "'",
+            KEY_COMMA: return ",",
+            KEY_MINUS: return "-",
+            KEY_PERIOD: return ".",
+            KEY_SLASH: return "/",
+            KEY_SEMICOLON: return ",",
+            KEY_EQUAL: return "=",
+            KEY_LEFT_BRACKET: return "[",
+            KEY_BACKSLASH: return "\\",
+            KEY_RIGHT_BRACKET: return "]",
+            KEY_GRAVE: return "`",
+
+            // Numbers
+            KEY_ZERO: return "0",
+            KEY_ONE: return "1",
+            KEY_TWO: return "2",
+            KEY_THREE: return "3",
+            KEY_FOUR: return "4",
+            KEY_FIVE: return "5",
+            KEY_SIX: return "6",
+            KEY_SEVEN: return "7",
+            KEY_EIGHT: return "8",
+            KEY_NINE: return "9",
+
+            // Letters
+            KEY_A: return "A",
+            KEY_B: return "B",
+            KEY_C: return "C",
+            KEY_D: return "D",
+            KEY_E: return "E",
+            KEY_F: return "F",
+            KEY_G: return "G",
+            KEY_H: return "H",
+            KEY_I: return "I",
+            KEY_J: return "J",
+            KEY_K: return "K",
+            KEY_L: return "L",
+            KEY_M: return "M",
+            KEY_N: return "N",
+            KEY_O: return "O",
+            KEY_P: return "P",
+            KEY_Q: return "Q",
+            KEY_R: return "R",
+            KEY_S: return "S",
+            KEY_T: return "T",
+            KEY_U: return "U",
+            KEY_V: return "V",
+            KEY_W: return "W",
+            KEY_X: return "X",
+            KEY_Y: return "Y",
+            KEY_Z: return "Z",
+
+            // Function keys
+            KEY_F1: return "F1",
+            KEY_F2: return "F2",
+            KEY_F3: return "F3",
+            KEY_F4: return "F4",
+            KEY_F5: return "F5",
+            KEY_F6: return "F6",
+            KEY_F7: return "F7",
+            KEY_F8: return "F8",
+            KEY_F9: return "F9",
+            KEY_F10: return "F10",
+            KEY_F11: return "F11",
+            KEY_F12: return "F12",
+
+            // Control keys
+            KEY_SPACE: return "SPACE",
+            KEY_ESCAPE: return "ESC",
+            KEY_ENTER: return "ENTER",
+            KEY_TAB: return "TAB",
+            KEY_BACKSPACE: return "BACKSPACE",
+            KEY_INSERT: return "INSERT",
+            KEY_DELETE: return "DELETE",
+            KEY_HOME: return "HOME",
+            KEY_END: return "END",
+            KEY_PAGE_UP: return "PAGE UP",
+            KEY_PAGE_DOWN: return "PAGE DOWN",
+
+            // Navigation
+            KEY_UP: return "UP",
+            KEY_DOWN: return "DOWN",
+            KEY_LEFT: return "LEFT",
+            KEY_RIGHT: return "RIGHT",
+
+            // Locks and toggles
+            KEY_CAPS_LOCK: return "CAPS LOCK",
+            KEY_SCROLL_LOCK: return "SCROLL LOCK",
+            KEY_NUM_LOCK: return "NUM LOCK",
+            KEY_PRINT_SCREEN: return "PRINT SCREEN",
+            KEY_PAUSE: return "PAUSE",
+
+            // Modifiers
+            KEY_LEFT_SHIFT: return "LEFT SHIFT",
+            KEY_RIGHT_SHIFT: return "RIGHT SHIFT",
+            KEY_LEFT_CONTROL: return "LEFT CTRL",
+            KEY_RIGHT_CONTROL: return "RIGHT CTRL",
+            KEY_LEFT_ALT: return "LEFT ALT",
+            KEY_RIGHT_ALT: return "RIGHT ALT",
+            KEY_LEFT_SUPER: return "LEFT SUPER",
+            KEY_RIGHT_SUPER: return "RIGHT SUPER",
+            KEY_KB_MENU: return "KB MENU",
+
+            // Numpad
+            KEY_KP_0: return "NUMPAD 0",
+            KEY_KP_1: return "NUMPAD 1",
+            KEY_KP_2: return "NUMPAD 2",
+            KEY_KP_3: return "NUMPAD 3",
+            KEY_KP_4: return "NUMPAD 4",
+            KEY_KP_5: return "NUMPAD 5",
+            KEY_KP_6: return "NUMPAD 6",
+            KEY_KP_7: return "NUMPAD 7",
+            KEY_KP_8: return "NUMPAD 8",
+            KEY_KP_9: return "NUMPAD 9",
+            KEY_KP_DECIMAL: return "NUMPAD .",
+            KEY_KP_DIVIDE: return "NUMPAD /",
+            KEY_KP_MULTIPLY: return "NUMPAD *",
+            KEY_KP_SUBTRACT: return "NUMPAD -",
+            KEY_KP_ADD: return "NUMPAD +",
+            KEY_KP_ENTER: return "NUMPAD ENTER",
+            KEY_KP_EQUAL: return "NUMPAD =",
+
+            _ -> return "UNKNOWN",
+        end
+    end
 end
 
 // Function aliases
@@ -812,6 +953,7 @@ scope (*):
     public final GetKeyPressed: function = get_key_pressed
     public final GetCharPressed: function = get_char_pressed
     public final SetExitKey: function = set_exit_key
+    public final GetKeyName: function = get_key_name
 
     // Gamepad input functions
     public final IsGamepadAvailable: function = is_gamepad_available

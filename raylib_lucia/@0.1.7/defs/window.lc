@@ -35,8 +35,6 @@ private final get_clipboard_text_c: &int = libload.get_fn(lib, "GetClipboardText
 private final set_clipboard_text_c: &int = libload.get_fn(lib, "SetClipboardText", ["str"], "void")
 private final set_window_min_size_c: &int = libload.get_fn(lib, "SetWindowMinSize", ["int", "int"], "void")
 private final set_window_max_size_c: &int = libload.get_fn(lib, "SetWindowMaxSize", ["int", "int"], "void")
-// RLAPI void SetWindowOpacity(float opacity);                       // Set window opacity [0.0f..1.0f]
-// RLAPI void SetWindowFocused(void);                                // Set window focused
 private final set_window_opacity_c: &int = libload.get_fn(lib, "SetWindowOpacity", ["float"], "void")
 private final set_window_focused_c: &int = libload.get_fn(lib, "SetWindowFocused", [], "void")
 
@@ -455,6 +453,54 @@ public final fun set_fullscreen(fullscreen: bool) -> void:
         set_window_size(*_screen_width, *_screen_height)
         clear_window_state(FLAG_FULLSCREEN_MODE)
     end
+    return null
+end
+
+public final fun set_window_min_size(width: int, height: int) -> void:
+    /// Sets the minimum size of the window.
+    ///     @param width: int - The minimum width of the window.
+    ///     @param height: int - The minimum height of the window.
+    ///     @return: void - No return value.
+    if (set_window_min_size_c == null):
+        throw "Function 'set_window_min_size' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_min_size_c, [width, height])
+    return null
+end
+
+public final fun set_window_max_size(width: int, height: int) -> void:
+    /// Sets the maximum size of the window.
+    ///     @param width: int - The maximum width of the window.
+    ///     @param height: int - The maximum height of the window.
+    ///     @return: void - No return value.
+    if (set_window_max_size_c == null):
+        throw "Function 'set_window_max_size' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_max_size_c, [width, height])
+    return null
+end
+
+public final fun set_window_opacity(opacity: float) -> void:
+    /// Sets the opacity of the window.
+    ///     @param opacity: float - The opacity value (0.0f to 1.0f).
+    ///     @return: void - No return value.
+    if (set_window_opacity_c == null):
+        throw "Function 'set_window_opacity' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (opacity < 0.0 || opacity > 1.0):
+        throw "Opacity must be between 0.0 and 1.0." from "ValueError"
+    end
+    libload.call_fn(set_window_opacity_c, [opacity])
+    return null
+end
+
+public final fun set_window_focused() -> void:
+    /// Sets the window as focused.
+    ///     @return: void - No return value.
+    if (set_window_focused_c == null):
+        throw "Function 'set_window_focused' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_focused_c, [])
     return null
 end
 
