@@ -1,7 +1,7 @@
 {
     "ignore": [
         "lib/*.a",
-        "lib/bindings/*"
+        "lib/bindings/"
     ],
     "supported_platforms": [
         "windows",
@@ -23,6 +23,7 @@
         ]
     },
     "options": {
-        "overwrite_existing": false
+        "overwrite_existing": false,
+        "update_fresh": false
     }
 }
