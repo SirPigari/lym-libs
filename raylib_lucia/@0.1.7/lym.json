@@ -1,7 +1,7 @@
 {
     "ignore": [
         "lib/*.a",
-        "lib/bindings/"
+        "lib/binding/"
     ],
     "supported_platforms": [
         "windows",
