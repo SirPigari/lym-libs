@@ -10,8 +10,8 @@
     ],
     "platform_ignore": {
         "windows": [
-            "lib/lib*.so",
-            "lib/lib*.dylib"
+            "lib/*.so",
+            "lib/*.dylib"
         ],
         "linux": [
             "lib/*.dll",
@@ -21,5 +21,8 @@
             "lib/*.dll",
             "lib/*.so"
         ]
+    },
+    "options": {
+        "overwrite_existing": false
     }
 }
