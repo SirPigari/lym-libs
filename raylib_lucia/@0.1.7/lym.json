@@ -3,7 +3,6 @@
         "lib/*.a",
         "lib/bindings/*"
     ],
-    "entry": "__init__.lc",
     "supported_platforms": [
         "windows",
         "linux",
