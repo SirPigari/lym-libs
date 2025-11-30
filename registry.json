@@ -1,0 +1,42 @@
+{
+  "packages": {
+    "hello-world": {
+      "authors": [],
+      "description": "Simple hello world test package",
+      "latest_version": "2.0.0",
+      "names": [
+        "hello-world"
+      ]
+    },
+    "msgbox": {
+      "authors": [
+        "Markofwitch"
+      ],
+      "description": "Lucia package for displaying message boxes.",
+      "latest_version": "1.0.0",
+      "names": [
+        "msgbox"
+      ]
+    },
+    "raylib_lucia": {
+      "authors": [
+        "Markofwitch"
+      ],
+      "description": "Raylib bindings for Lucia.",
+      "latest_version": "0.1.7",
+      "names": [
+        "raylib_lucia"
+      ]
+    },
+    "sounds": {
+      "authors": [
+        "Markofwitch"
+      ],
+      "description": "Lucia package for sound playback and management.",
+      "latest_version": "1.0.0",
+      "names": [
+        "sounds"
+      ]
+    }
+  }
+}
