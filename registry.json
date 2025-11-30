@@ -25,7 +25,7 @@
       "description": "Raylib bindings for Lucia.",
       "latest_version": "0.1.7",
       "names": [
-        "raylib_lucia"
+        "raylib"
       ]
     },
     "sounds": {
