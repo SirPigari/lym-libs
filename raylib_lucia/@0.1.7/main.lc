@@ -1,0 +1,67 @@
+import libload
+import os
+import fs
+
+// Raylib binding for Lucia
+// This library supports Windows, Linux, and macOS platforms.
+
+// Currently in development. Only a subset of functions are implemented.
+
+public final RAYLIB_VERSION: str = "5.5.0"
+public final RAYLIB_LUCIA_VERSION: str = "0.1.7"
+
+private mutable lib: ?&int = null
+private mutable lib_lucia: ?&int = null
+
+match (os.os_name()):
+    "Windows":
+        if (!fs.file_exists(__dir__ + "lib/raylib.dll")):
+            throw f"raylib.dll not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
+        end
+        if (!fs.file_exists(__dir__ + "lib/raylib_lucia.dll")):
+            throw f"raylib_lucia.dll not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
+        end
+        lib = libload.load_lib(__dir__ + "lib/raylib.dll")
+        lib_lucia = libload.load_lib(__dir__ + "lib/raylib_lucia.dll")
+    end
+    "Linux":
+        if (!fs.file_exists(__dir__ + "lib/raylib.so")):
+            throw f"raylib.so not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
+        end
+        if (!fs.file_exists(__dir__ + "lib/raylib_lucia.so")):
+            throw f"raylib_lucia.so not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
+        end
+        lib = libload.load_lib(__dir__ + "lib/raylib.so")
+        lib_lucia = libload.load_lib(__dir__ + "lib/raylib_lucia.so")
+    end
+    "Darwin":
+        if (!fs.file_exists(__dir__ + "lib/raylib.dylib")):
+            throw f"raylib.dylib not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
+        end
+        if (!fs.file_exists(__dir__ + "lib/raylib_lucia.dylib")):
+            throw f"raylib_lucia.dylib not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
+        end
+        lib = libload.load_lib(__dir__ + "lib/raylib.dylib")
+        lib_lucia = libload.load_lib(__dir__ + "lib/raylib_lucia.dylib")
+    end
+    _ ->
+        throw f"Unsupported OS: {os.os_name()}" from "UnsupportedOSError"
+    end
+end
+
+if (lib == null):
+    throw "Failed to load the raylib library." from "LibraryLoadError"
+end
+
+// Include all definition files
+#include "defs/core.lc"
+#include "defs/window.lc"
+#include "defs/text.lc"
+#include "defs/drawing.lc"
+#include "defs/input.lc"
+#include "defs/audio.lc"
+#include "defs/colors.lc"
+
+// Clean up
+lib = libload.unload_lib(lib)
+lib_lucia = libload.unload_lib(lib_lucia)

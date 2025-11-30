@@ -1,0 +1,608 @@
+private final init_audio_device_c: &int = libload.get_fn(lib, "InitAudioDevice", [], "void")
+private final close_audio_device_c: &int = libload.get_fn(lib, "CloseAudioDevice", [], "void")
+private final is_audio_device_ready_c: &int = libload.get_fn(lib, "IsAudioDeviceReady", [], "bool")
+private final set_master_volume_c: &int = libload.get_fn(lib, "SetMasterVolume", ["float"], "void")
+private final get_master_volume_c: &int = libload.get_fn(lib, "GetMasterVolume", [], "float")
+
+// bindings for lucia
+private final play_wave_c: &int = libload.get_fn(lib_lucia, "bind_PlayWave", ["str", "float", "float", "float"], "str")
+private final play_sound_c: &int = libload.get_fn(lib_lucia, "bind_PlaySound", ["str", "float", "float", "float"], "str")
+private final stop_sound_c: &int = libload.get_fn(lib_lucia, "bind_StopSound", ["int"], "str")
+private final pause_sound_c: &int = libload.get_fn(lib_lucia, "bind_PauseSound", ["int"], "str")
+private final resume_sound_c: &int = libload.get_fn(lib_lucia, "bind_ResumeSound", ["int"], "str")
+private final is_sound_playing_c: &int = libload.get_fn(lib_lucia, "bind_IsSoundPlaying", ["int"], "str")
+private final unload_sound_c: &int = libload.get_fn(lib_lucia, "bind_UnloadSound", ["int"], "str")
+private final play_music_stream_c: &int = libload.get_fn(lib_lucia, "bind_PlayMusicStream", ["str", "float", "float", "float"], "str")
+private final stop_music_stream_c: &int = libload.get_fn(lib_lucia, "bind_StopMusicStream", ["int"], "str")
+private final unload_music_stream_c: &int = libload.get_fn(lib_lucia, "bind_UnloadMusicStream", ["int"], "str")
+private final pause_music_stream_c: &int = libload.get_fn(lib_lucia, "bind_PauseMusicStream", ["int"], "str")
+private final resume_music_stream_c: &int = libload.get_fn(lib_lucia, "bind_ResumeMusicStream", ["int"], "str")
+private final is_music_stream_playing_c: &int = libload.get_fn(lib_lucia, "bind_IsMusicStreamPlaying", ["int"], "str")
+private final play_audio_stream_c: &int = libload.get_fn(lib_lucia, "bind_PlayAudioStream", ["str", "int", "int", "int", "float", "float", "float"], "str")
+private final stop_audio_stream_c: &int = libload.get_fn(lib_lucia, "bind_StopAudioStream", ["int"], "str")
+private final unload_audio_stream_c: &int = libload.get_fn(lib_lucia, "bind_UnloadAudioStream", ["int"], "str")
+private final pause_audio_stream_c: &int = libload.get_fn(lib_lucia, "bind_PauseAudioStream", ["int"], "str")
+private final resume_audio_stream_c: &int = libload.get_fn(lib_lucia, "bind_ResumeAudioStream", ["int"], "str")
+private final is_audio_stream_playing_c: &int = libload.get_fn(lib_lucia, "bind_IsAudioStreamPlaying", ["int"], "str")
+private final unload_all_sounds_c: &int = libload.get_fn(lib_lucia, "bind_UnloadAllSounds", [], "void")
+private final unload_all_music_c: &int = libload.get_fn(lib_lucia, "bind_UnloadAllMusic", [], "void")
+private final unload_all_audio_streams_c: &int = libload.get_fn(lib_lucia, "bind_UnloadAllAudioStreams", [], "void")
+
+public final MAX_WAVES: int     = 256
+public final MAX_SOUNDS: int    = 512
+public final MAX_MUSICS: int    = 128
+public final MAX_STREAMS: int   = 128
+
+scope (*):
+    public final fun init_audio_device() -> void:
+        /// Initializes the audio device and context.
+        ///     @return: void - No return value.
+        if (init_audio_device_c == null):
+            throw "Function 'init_audio_device' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(init_audio_device_c, [])
+        return null
+    end
+
+    public final fun close_audio_device() -> void:
+        /// Closes the audio device and context.
+        ///     @return: void - No return value.
+        if (close_audio_device_c == null):
+            throw "Function 'close_audio_device' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(close_audio_device_c, [])
+        return null
+    end
+
+    public final fun is_audio_device_ready() -> bool:
+        /// Checks if the audio device has been initialized successfully.
+        ///     @return: bool - True if the audio device is ready, false otherwise.
+        if (is_audio_device_ready_c == null):
+            throw "Function 'is_audio_device_ready' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        return libload.call_fn(is_audio_device_ready_c, []) as bool
+    end
+
+    public final fun set_master_volume(mutable volume: int | float) -> void:
+        /// Sets the master volume (listener).
+        ///     @param volume: float - The master volume level (0.0 to 1.0).
+        ///     @return: void - No return value.
+        if (set_master_volume_c == null):
+            throw "Function 'set_master_volume' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        volume = volume as float
+        if (volume < 0.0 || volume > 1.0):
+            throw "Volume must be in the range 0.0 to 1.0." from "ValueError"
+        end
+        libload.call_fn(set_master_volume_c, [volume])
+        return null
+    end
+    
+    public final fun get_master_volume() -> float:
+        /// Gets the master volume (listener).
+        ///     @return: float - The current master volume level (0.0 to 1.0).
+        if (get_master_volume_c == null):
+            throw "Function 'get_master_volume' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        return libload.call_fn(get_master_volume_c, []) as float
+    end
+end
+
+public final fun play_wave(
+    file_name: str,
+    mutable volume: int | float = 1.0,
+    mutable pitch: int | float = 1.0,
+    mutable pan: int | float = 0.0,
+)? -> void:
+    /// Plays a wave file (.wav) with specified volume, pitch, and pan.
+    ///     @param file_name: str - The path to the wave file to play.
+    ///     @param volume: float - The volume level (0.0 to 1.0). Default is 1.0 (max volume).
+    ///     @param pitch: float - The pitch level (0.5 to 2.0). Default is 1.0 (normal pitch).
+    ///     @param pan: float - The pan level (-1.0 to 1.0). Default is 0.0 (centered).
+    ///     @return: void - No return value.
+    ///     @raises AudioError: If there is an error playing the wave file.
+    if (play_wave_c == null):
+        throw "Function 'play_wave' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    volume = volume as float
+    pitch = pitch as float
+    pan = pan as float
+    if (volume < 0.0 || volume > 1.0):
+        throw "Volume must be in the range 0.0 to 1.0." from "ValueError"
+    end
+    if (pitch < 0.5 || pitch > 2.0):
+        throw "Pitch must be in the range 0.5 to 2.0." from "ValueError"
+    end
+    if (pan < -1.0 || pan > 1.0):
+        throw "Pan must be in the range -1.0 to 1.0." from "ValueError"
+    end
+    result: str = libload.parse_str_ptr(libload.call_fn(play_wave_c, [file_name, volume, pitch, pan])) as str
+    if result.startswith("ERR: "):
+        throw result[5..] from "AudioError"
+    end
+    return null
+end
+
+public final fun unload_all_sounds() -> void:
+    /// Unloads all loaded sounds, freeing associated resources.
+    ///     @return: void - No return value.
+    if (unload_all_sounds_c == null):
+        throw "Function 'unload_all_sounds' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_all_sounds_c, [])
+    return null
+end
+
+public final fun unload_all_music() -> void:
+    /// Unloads all loaded music streams, freeing associated resources.
+    ///     @return: void - No return value.
+    if (unload_all_music_c == null):
+        throw "Function 'unload_all_music' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_all_music_c, [])
+    return null
+end
+
+public final fun unload_all_audio_streams() -> void:
+    /// Unloads all loaded audio streams, freeing associated resources.
+    ///     @return: void - No return value.
+    if (unload_all_audio_streams_c == null):
+        throw "Function 'unload_all_audio_streams' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_all_audio_streams_c, [])
+    return null
+end
+
+scope (*):
+    public final fun play_sound(
+        file_name: str,
+        mutable volume: int | float = 1.0,
+        mutable pitch: int | float = 1.0,
+        mutable pan: int | float = 0.0,
+    )? -> int:
+        /// Plays a sound file (.wav, .ogg, .mp3) with specified volume, pitch, and pan.
+        ///     @param file_name: str - The path to the sound file to play.
+        ///     @param volume: float - The volume level (0.0 to 1.0). Default is 1.0 (max volume).
+        ///     @param pitch: float - The pitch level (0.5 to 2.0). Default is 1.0 (normal pitch).
+        ///     @param pan: float - The pan level (-1.0 to 1.0). Default is 0.0 (centered).
+        ///     @return: int - The sound ID if successful.
+        ///     @raises AudioError: If there is an error playing the sound file.
+        if (play_sound_c == null):
+            throw "Function 'play_sound' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        volume = volume as float
+        pitch = pitch as float
+        pan = pan as float
+        if (volume < 0.0 || volume > 1.0):
+            throw "Volume must be in the range 0.0 to 1.0." from "ValueError"
+        end
+        if (pitch < 0.5 || pitch > 2.0):
+            throw "Pitch must be in the range 0.5 to 2.0." from "ValueError"
+        end
+        if (pan < -1.0 || pan > 1.0):
+            throw "Pan must be in the range -1.0 to 1.0." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(play_sound_c, [file_name, volume, pitch, pan])) as str
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        if result.startswith("OUT: "):
+            return (result[5..] as int)
+        end
+        throw f"Unexpected return value from play_sound: {result}" from "AudioError"
+    end
+
+    public final fun stop_sound(id: int)? -> void:
+        /// Stops a sound by its ID.
+        ///     @param id: int - The sound ID to stop.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error stopping the sound.
+        if (stop_sound_c == null):
+            throw "Function 'stop_sound' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Sound ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(stop_sound_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public final fun unload_sound(id: int)? -> void:
+        /// Unloads a sound by its ID, freeing associated resources.
+        ///     @param id: int - The sound ID to unload.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error unloading the sound.
+        if (unload_sound_c == null):
+            throw "Function 'unload_sound' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Sound ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(unload_sound_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public final fun pause_sound(id: int)? -> void:
+        /// Pauses a sound by its ID.
+        ///     @param id: int - The sound ID to pause.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error pausing the sound.
+        if (pause_sound_c == null):
+            throw "Function 'pause_sound' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Sound ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(pause_sound_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public final fun resume_sound(id: int)? -> void:
+        /// Resumes a paused sound by its ID.
+        ///     @param id: int - The sound ID to resume.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error resuming the sound.
+        if (resume_sound_c == null):
+            throw "Function 'resume_sound' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Sound ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(resume_sound_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public final fun is_sound_playing(id: int)? -> bool:
+        /// Checks if a sound is currently playing by its ID.
+        ///     @param id: int - The sound ID to check.
+        ///     @return: bool - True if the sound is playing, false otherwise.
+        ///     @raises AudioError: If there is an error checking the sound status.
+        if (is_sound_playing_c == null):
+            throw "Function 'is_sound_playing' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Sound ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(is_sound_playing_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        if result == "TRUE":
+            return true
+        else if result == "FALSE":
+            return false
+        end
+        throw f"Unexpected return value from is_sound_playing: {result}" from "AudioError"
+    end
+end
+
+scope (*):
+    public fun play_music_stream(
+        file_name: str,
+        mutable volume: int | float = 1.0,
+        mutable pitch: int | float = 1.0,
+        mutable pan: int | float = 0.0,
+    )? -> int:
+        /// Plays a music stream file (.wav, .ogg, .mp3) with specified volume, pitch, and pan.
+        ///     @param file_name: str - The path to the music file to play.
+        ///     @param volume: float - The volume level (0.0 to 1.0). Default is 1.0 (max volume).
+        ///     @param pitch: float - The pitch level (0.5 to 2.0). Default is 1.0 (normal pitch).
+        ///     @param pan: float - The pan level (-1.0 to 1.0). Default is 0.0 (centered).
+        ///     @return: int - The music ID if successful.
+        ///     @raises AudioError: If there is an error playing the music file.
+        if (play_music_stream_c == null):
+            throw "Function 'play_music_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        volume = volume as float
+        pitch = pitch as float
+        pan = pan as float
+        if (volume < 0.0 || volume > 1.0):
+            throw "Volume must be in the range 0.0 to 1.0." from "ValueError"
+        end
+        if (pitch < 0.5 || pitch > 2.0):
+            throw "Pitch must be in the range 0.5 to 2.0." from "ValueError"
+        end
+        if (pan < -1.0 || pan > 1.0):
+            throw "Pan must be in the range -1.0 to 1.0." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(play_music_stream_c, [file_name, volume, pitch, pan])) as str
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        if result.startswith("OUT: "):
+            return (result[5..] as int)
+        end
+        throw f"Unexpected return value from play_music_stream: {result}" from "AudioError"
+    end
+
+    public fun stop_music_stream(id: int)? -> void:
+        /// Stops a music stream by its ID.
+        ///     @param id: int - The music ID to stop.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error stopping the music.
+        if (stop_music_stream_c == null):
+            throw "Function 'stop_music_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Music ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(stop_music_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun unload_music_stream(id: int)? -> void:
+        /// Unloads a music stream by its ID, freeing associated resources.
+        ///     @param id: int - The music ID to unload.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error unloading the music.
+        if (unload_music_stream_c == null):
+            throw "Function 'unload_music_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Music ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(unload_music_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun pause_music_stream(id: int)? -> void:
+        /// Pauses a music stream by its ID.
+        ///     @param id: int - The music ID to pause.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error pausing the music.
+        if (pause_music_stream_c == null):
+            throw "Function 'pause_music_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Music ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(pause_music_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun resume_music_stream(id: int)? -> void:
+        /// Resumes a paused music stream by its ID.
+        ///     @param id: int - The music ID to resume.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error resuming the music.
+        if (resume_music_stream_c == null):
+            throw "Function 'resume_music_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Music ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(resume_music_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun is_music_stream_playing(id: int)? -> bool:
+        /// Checks if a music stream is currently playing by its ID.
+        ///     @param id: int - The music ID to check.
+        ///     @return: bool - True if the music is playing, false otherwise.
+        ///     @raises AudioError: If there is an error checking the music status.
+        if (is_music_stream_playing_c == null):
+            throw "Function 'is_music_stream_playing' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Music ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(is_music_stream_playing_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        if result == "TRUE":
+            return true
+        else if result == "FALSE":
+            return false
+        end
+        throw f"Unexpected return value from is_music_stream_playing: {result}" from "AudioError"
+    end
+end
+
+scope (*):
+    public fun play_audio_stream(
+        file_name: str,
+        sample_rate: int,
+        sample_size: int,
+        channels: int,
+        mutable volume: int | float = 1.0,
+        mutable pitch: int | float = 1.0,
+        mutable pan: int | float = 0.0,
+    )? -> int:
+        /// Plays a custom audio stream with specified parameters.
+        ///     @param file_name: str - The path to the audio file to play.
+        ///     @param sample_rate: int - The sample rate of the audio stream (e.g., 44100).
+        ///     @param sample_size: int - The sample size in bits (e.g., 16).
+        ///     @param channels: int - The number of channels (1 for mono, 2 for stereo).
+        ///     @param volume: float - The volume level (0.0 to 1.0). Default is 1.0 (max volume).
+        ///     @param pitch: float - The pitch level (0.5 to 2.0). Default is 1.0 (normal pitch).
+        ///     @param pan: float - The pan level (-1.0 to 1.0). Default is 0.0 (centered).
+        ///     @return: int - The audio stream ID if successful.
+        ///     @raises AudioError: If there is an error playing the audio stream.
+        if (play_audio_stream_c == null):
+            throw "Function 'play_audio_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        volume = volume as float
+        pitch = pitch as float
+        pan = pan as float
+        if (sample_rate <= 0):
+            throw "Sample rate must be a positive integer." from "ValueError"
+        end
+        if (sample_size != 8 && sample_size != 16 && sample_size != 32):
+            throw "Sample size must be one of the following values: 8, 16, or 32." from "ValueError"
+        end
+        if (channels != 1 && channels != 2):
+            throw "Channels must be either 1 (mono) or 2 (stereo)." from "ValueError"
+        end
+        if (volume < 0.0 || volume > 1.0):
+            throw "Volume must be in the range 0.0 to 1.0." from "ValueError"
+        end
+        if (pitch < 0.5 || pitch > 2.0):
+            throw "Pitch must be in the range 0.5 to 2.0." from "ValueError"
+        end
+        if (pan < -1.0 || pan > 1.0):
+            throw "Pan must be in the range -1.0 to 1.0." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(play_audio_stream_c, [file_name, sample_rate, sample_size, channels, volume, pitch, pan])) as str
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        if result.startswith("OUT: "):
+            return (result[5..] as int)
+        end
+        throw f"Unexpected return value from play_audio_stream: {result}" from "AudioError"
+    end
+
+    public fun stop_audio_stream(id: int)? -> void:
+        /// Stops an audio stream by its ID.
+        ///     @param id: int - The audio stream ID to stop.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error stopping the audio stream.
+        if (stop_audio_stream_c == null):
+            throw "Function 'stop_audio_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Audio stream ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(stop_audio_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun unload_audio_stream(id: int)? -> void:
+        /// Unloads an audio stream by its ID, freeing associated resources.
+        ///     @param id: int - The audio stream ID to unload.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error unloading the audio stream.
+        if (unload_audio_stream_c == null):
+            throw "Function 'unload_audio_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Audio stream ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(unload_audio_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun pause_audio_stream(id: int)? -> void:
+        /// Pauses an audio stream by its ID.
+        ///     @param id: int - The audio stream ID to pause.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error pausing the audio stream.
+        if (pause_audio_stream_c == null):
+            throw "Function 'pause_audio_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Audio stream ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(pause_audio_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun resume_audio_stream(id: int)? -> void:
+        /// Resumes a paused audio stream by its ID.
+        ///     @param id: int - The audio stream ID to resume.
+        ///     @return: void - No return value.
+        ///     @raises AudioError: If there is an error resuming the audio stream.
+        if (resume_audio_stream_c == null):
+            throw "Function 'resume_audio_stream' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Audio stream ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(resume_audio_stream_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        return null
+    end
+
+    public fun is_audio_stream_playing(id: int)? -> bool:
+        /// Checks if an audio stream is currently playing by its ID.
+        ///     @param id: int - The audio stream ID to check.
+        ///     @return: bool - True if the audio stream is playing, false otherwise.
+        ///     @raises AudioError: If there is an error checking the audio stream status.
+        if (is_audio_stream_playing_c == null):
+            throw "Function 'is_audio_stream_playing' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        if (id < 0):
+            throw "Audio stream ID must be a non-negative integer." from "ValueError"
+        end
+        result: str = libload.parse_str_ptr(libload.call_fn(is_audio_stream_playing_c, [id]))
+        if result.startswith("ERR: "):
+            throw result[5..] from "AudioError"
+        end
+        if result == "TRUE":
+            return true
+        else if result == "FALSE":
+            return false
+        end
+        throw f"Unexpected return value from is_audio_stream_playing: {result}" from "AudioError"
+    end
+end
+
+public final InitAudioDevice: function = init_audio_device
+public final CloseAudioDevice: function = close_audio_device
+public final IsAudioDeviceReady: function = is_audio_device_ready
+public final SetMasterVolume: function = set_master_volume
+public final GetMasterVolume: function = get_master_volume
+
+// bindings for lucia
+public final PlayWave: function = play_wave
+
+public final PlaySound: function = play_sound
+public final StopSound: function = stop_sound
+public final UnloadSound: function = unload_sound
+public final PauseSound: function = pause_sound
+public final ResumeSound: function = resume_sound
+public final IsSoundPlaying: function = is_sound_playing
+
+public final PlayMusicStream: function = play_music_stream
+public final StopMusicStream: function = stop_music_stream
+public final UnloadMusicStream: function = unload_music_stream
+public final PauseMusicStream: function = pause_music_stream
+public final ResumeMusicStream: function = resume_music_stream
+public final IsMusicStreamPlaying: function = is_music_stream_playing
+
+public final PlayAudioStream: function = play_audio_stream
+public final StopAudioStream: function = stop_audio_stream
+public final UnloadAudioStream: function = unload_audio_stream
+public final PauseAudioStream: function = pause_audio_stream
+public final ResumeAudioStream: function = resume_audio_stream
+public final IsAudioStreamPlaying: function = is_audio_stream_playing
+
+public final UnloadAllSounds: function = unload_all_sounds
+public final UnloadAllMusic: function = unload_all_music
+public final UnloadAllAudioStreams: function = unload_all_audio_streams
