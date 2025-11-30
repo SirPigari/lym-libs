@@ -14,5 +14,8 @@
     },
     "config": {
         "allow_unsafe": true
-    }
+    },
+    "names": [
+        "raylib"
+    ]
 }

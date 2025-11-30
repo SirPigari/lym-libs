@@ -1,0 +1,614 @@
+private final init_window_c: &int = libload.get_fn(lib, "InitWindow", [
+    "int", "int", "str"
+], "void")
+private final close_window_c: &int = libload.get_fn(lib, "CloseWindow", [], "void")
+private final window_should_close_c: &int = libload.get_fn(lib, "WindowShouldClose", [], "int")
+private final is_window_ready_c: &int = libload.get_fn(lib, "IsWindowReady", [], "bool")
+private final is_window_minimized_c: &int = libload.get_fn(lib, "IsWindowMinimized", [], "bool")
+private final is_window_maximized_c: &int = libload.get_fn(lib, "IsWindowMaximized", [], "bool")
+private final is_window_focused_c: &int = libload.get_fn(lib, "IsWindowFocused", [], "bool")
+private final is_window_resized_c: &int = libload.get_fn(lib, "IsWindowResized", [], "bool")
+private final is_window_hidden_c: &int = libload.get_fn(lib, "IsWindowHidden", [], "bool")
+private final is_window_fullscreen_c: &int = libload.get_fn(lib, "IsWindowFullscreen", [], "bool")
+private final toggle_fullscreen_c: &int = libload.get_fn(lib, "ToggleFullscreen", [], "void")
+private final toggle_borderless_windowed_c: &int = libload.get_fn(lib, "ToggleBorderlessWindowed", [], "void")
+private final maximize_window_c: &int = libload.get_fn(lib, "MaximizeWindow", [], "void")
+private final minimize_window_c: &int = libload.get_fn(lib, "MinimizeWindow", [], "void")
+private final restore_window_c: &int = libload.get_fn(lib, "RestoreWindow", [], "void")
+private final set_window_title_c: &int = libload.get_fn(lib, "SetWindowTitle", ["str"], "void")
+private final set_window_position_c: &int = libload.get_fn(lib, "SetWindowPosition", ["int", "int"], "void")
+private final set_window_size_c: &int = libload.get_fn(lib, "SetWindowSize", ["int", "int"], "void")
+private final set_window_monitor_c: &int = libload.get_fn(lib, "SetWindowMonitor", ["int"], "void")
+private final set_config_flags_c: &int = libload.get_fn(lib, "SetConfigFlags", ["int"], "void")
+private final set_window_state_c: &int = libload.get_fn(lib, "SetWindowState", ["int"], "void")
+private final clear_window_state_c: &int = libload.get_fn(lib, "ClearWindowState", ["int"], "void")
+private final get_screen_height_c: &int = libload.get_fn(lib, "GetScreenHeight", [], "int")
+private final get_screen_width_c: &int = libload.get_fn(lib, "GetScreenWidth", [], "int")
+private final get_render_height_c: &int = libload.get_fn(lib, "GetRenderHeight", [], "int")
+private final get_render_width_c: &int = libload.get_fn(lib, "GetRenderWidth", [], "int")
+private final get_monitor_height_c: &int = libload.get_fn(lib, "GetMonitorHeight", ["int"], "int")
+private final get_monitor_width_c: &int = libload.get_fn(lib, "GetMonitorWidth", ["int"], "int")
+private final get_monitor_count_c: &int = libload.get_fn(lib, "GetMonitorCount", [], "int")
+private final get_current_monitor_c: &int = libload.get_fn(lib, "GetCurrentMonitor", [], "int")
+private final get_monitor_refresh_rate_c: &int = libload.get_fn(lib, "GetMonitorRefreshRate", ["int"], "int")
+private final get_clipboard_text_c: &int = libload.get_fn(lib, "GetClipboardText", [], "str")
+private final set_clipboard_text_c: &int = libload.get_fn(lib, "SetClipboardText", ["str"], "void")
+private final set_window_min_size_c: &int = libload.get_fn(lib, "SetWindowMinSize", ["int", "int"], "void")
+private final set_window_max_size_c: &int = libload.get_fn(lib, "SetWindowMaxSize", ["int", "int"], "void")
+private final set_window_opacity_c: &int = libload.get_fn(lib, "SetWindowOpacity", ["float"], "void")
+private final set_window_focused_c: &int = libload.get_fn(lib, "SetWindowFocused", [], "void")
+
+// bindings for lucia
+private final set_window_icon_c: &int = libload.get_fn(lib_lucia, "bind_SetWindowIcon", ["str"], "void")
+private final set_window_icons_c: &int = libload.get_fn(lib_lucia, "bind_SetWindowIcons", ["str", "int"], "void")
+private final get_window_position_c: &int = libload.get_fn(lib_lucia, "bind_GetWindowPosition", [], "str")
+private final get_window_scale_dpi_c: &int = libload.get_fn(lib_lucia, "bind_GetWindowScaleDPI", [], "str")
+
+public final FLAG_VSYNC_HINT: int           = 0x00000040  // 1 << 6
+public final FLAG_FULLSCREEN_MODE: int      = 0x00000002  // 1 << 1
+public final FLAG_WINDOW_RESIZABLE: int     = 0x00000004  // 1 << 2
+public final FLAG_WINDOW_UNDECORATED: int   = 0x00000008  // 1 << 3
+public final FLAG_WINDOW_TRANSPARENT: int   = 0x00000010  // 1 << 4
+public final FLAG_MSAA_4X_HINT: int         = 0x00000020  // 1 << 5
+public final FLAG_WINDOW_HIDDEN: int        = 0x00000080  // 1 << 7
+public final FLAG_WINDOW_ALWAYS_RUN: int    = 0x00000100  // 1 << 8
+public final FLAG_WINDOW_MINIMIZED: int     = 0x00000200  // 1 << 9
+public final FLAG_WINDOW_MAXIMIZED: int     = 0x00000400  // 1 << 10
+public final FLAG_WINDOW_UNFOCUSED: int     = 0x00000800  // 1 << 11
+public final FLAG_WINDOW_TOPMOST: int       = 0x00001000  // 1 << 12
+public final FLAG_WINDOW_HIGHDPI: int       = 0x00002000  // 1 << 13
+public final FLAG_INTERLACED_HINT: int      = 0x00004000  // 1 << 14
+
+public final fun init_window(
+    width: int,
+    height: int,
+    title: str,
+) -> void:
+    /// Initializes a window and OpenGL context.
+    ///     @param width: int - The width of the window.
+    ///     @param height: int - The height of the window.
+    ///     @param title: str - The title of the window.
+    ///     @return: void - No return value.
+    if (init_window_c == null):
+        throw "Function 'init_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _title: &int = libload.create_str_ptr(title)
+    if (_title == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(init_window_c, [width, height, _title])
+    scope (*):
+        *_screen_width = width
+    end scope (*):
+        *_screen_height = height
+    end
+    return null
+end
+
+public final fun close_window() -> void:
+    /// Closes the window and unloads OpenGL context.
+    ///     @return: void - No return value.
+    if (close_window_c == null):
+        throw "Function 'close_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(close_window_c, [])
+    return null
+end
+
+public final fun window_should_close() -> bool:
+    /// Checks if the window should close (if the close button was pressed).
+    ///     @return: bool - True if the window should close, false otherwise.
+    if (window_should_close_c == null):
+        throw "Function 'window_should_close' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(window_should_close_c, [])
+    return result != 0
+end
+
+public final fun is_window_ready() -> bool:
+    /// Checks if the window has been initialized successfully.
+    ///     @return: bool - True if the window is ready, false otherwise.
+    if (is_window_ready_c == null):
+        throw "Function 'is_window_ready' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_ready_c, []) as bool
+end
+
+public final fun is_window_minimized() -> bool:
+    /// Checks if the window is currently minimized.
+    ///     @return: bool - True if the window is minimized, false otherwise.
+    if (is_window_minimized_c == null):
+        throw "Function 'is_window_minimized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_minimized_c, []) as bool
+end
+
+public final fun is_window_maximized() -> bool:
+    /// Checks if the window is currently maximized.
+    ///     @return: bool - True if the window is maximized, false otherwise.
+    if (is_window_maximized_c == null):
+        throw "Function 'is_window_maximized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_maximized_c, []) as bool
+end
+
+public final fun is_window_focused() -> bool:
+    /// Checks if the window is currently focused.
+    ///     @return: bool - True if the window is focused, false otherwise.
+    if (is_window_focused_c == null):
+        throw "Function 'is_window_focused' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_focused_c, []) as bool
+end
+
+public final fun is_window_resized() -> bool:
+    /// Checks if the window has been resized.
+    ///     @return: bool - True if the window has been resized, false otherwise.
+    if (is_window_resized_c == null):
+        throw "Function 'is_window_resized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_resized_c, []) as bool
+end
+
+public final fun is_window_hidden() -> bool:
+    /// Checks if the window is currently hidden.
+    ///     @return: bool - True if the window is hidden, false otherwise.
+    if (is_window_hidden_c == null):
+        throw "Function 'is_window_hidden' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_hidden_c, []) as bool
+end
+
+public final fun is_window_fullscreen() -> bool:
+    /// Checks if the window is currently in fullscreen mode.
+    ///     @return: bool - True if the window is fullscreen, false otherwise.
+    if (is_window_fullscreen_c == null):
+        throw "Function 'is_window_fullscreen' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(is_window_fullscreen_c, []) as bool
+    return result != 0
+end
+
+public final fun toggle_fullscreen() -> void: 
+    /// Toggles the window between fullscreen and windowed mode.
+    ///     @return: void - No return value.
+    if (toggle_fullscreen_c == null):
+        throw "Function 'toggle_fullscreen' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(toggle_fullscreen_c, [])
+    return null
+end
+
+public final fun toggle_maximize() -> void:
+    /// Toggles the window between maximized and restored states.
+    ///     @return: void - No return value.
+    if (is_window_maximized()):
+        restore_window()
+    else:
+        maximize_window()
+    end
+    return null
+end
+
+public final fun toggle_borderless_windowed() -> void:
+    /// Toggles the window between borderless windowed and windowed mode.
+    ///     @return: void - No return value.
+    if (toggle_borderless_windowed_c == null):
+        throw "Function 'toggle_borderless_windowed' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(toggle_borderless_windowed_c, [])
+    return null
+end
+
+public final fun maximize_window() -> void:
+    /// Maximizes the window.
+    ///     @return: void - No return value.
+    if (maximize_window_c == null):
+        throw "Function 'maximize_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(maximize_window_c, [])
+    return null
+end
+
+public final fun minimize_window() -> void:
+    /// Minimizes the window.
+    ///     @return: void - No return value.
+    if (minimize_window_c == null):
+        throw "Function 'minimize_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(minimize_window_c, [])
+    return null
+end
+
+public final fun restore_window() -> void:
+    /// Restores the window to its previous size and position.
+    ///     @return: void - No return value.
+    if (restore_window_c == null):
+        throw "Function 'restore_window' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(restore_window_c, [])
+    return null
+end
+
+public final fun set_window_title(title: str) -> void:
+    /// Sets the title of the window.
+    ///     @param title: str - The new title for the window.
+    ///     @return: void - No return value.
+    if (set_window_title_c == null):
+        throw "Function 'set_window_title' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _title: &int = libload.create_str_ptr(title)
+    if (_title == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(set_window_title_c, [_title])
+    return null
+end
+
+public final fun set_window_position(x: int, y: int) -> void:
+    /// Sets the position of the window on the screen.
+    ///     @param x: int - The x position of the window.
+    ///     @param y: int - The y position of the window.
+    ///     @return: void - No return value.
+    if (set_window_position_c == null):
+        throw "Function 'set_window_position' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_position_c, [x, y])
+    return null
+end
+
+public final fun set_window_size(width: int, height: int) -> void:
+    /// Sets the size of the window.
+    ///     @param width: int - The new width of the window.
+    ///     @param height: int - The new height of the window.
+    ///     @return: void - No return value.
+    if (set_window_size_c == null):
+        throw "Function 'set_window_size' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (width <= 0 || height <= 0):
+        throw "Width and height must be positive integers." from "ValueError"
+    end
+    libload.call_fn(set_window_size_c, [width, height])
+    return null
+end
+
+public final fun set_window_monitor(monitor: int) -> void:
+    /// Sets the monitor for the window (fullscreen mode).
+    ///     @param monitor: int - The monitor index (0 for primary, 1 for secondary, etc.).
+    ///     @return: void - No return value.
+    if (set_window_monitor_c == null):
+        throw "Function 'set_window_monitor' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_monitor_c, [monitor])
+    return null
+end
+
+public final fun set_config_flags(flags: int) -> void:
+    /// Sets the configuration flags for the window (must be called before InitWindow).
+    ///     @param flags: int - The configuration flags (bitwise OR of FLAG_* constants).
+    ///     @return: void - No return value.
+    if (set_config_flags_c == null):
+        throw "Function 'set_config_flags' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (flags < 0):
+        throw "Flags must be a non-negative integer." from "ValueError"
+    end
+    libload.call_fn(set_config_flags_c, [flags])
+    return null
+end
+
+public final fun set_window_state(flags: int) -> void:
+    /// Enables specific window flags at runtime.
+    ///     @param flags: int - The window flags to enable (bitwise OR of FLAG_* constants).
+    ///     @return: void - No return value.
+    if (set_window_state_c == null):
+        throw "Function 'set_window_state' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (flags < 0):
+        throw "Flags must be a non-negative integer." from "ValueError"
+    end
+    libload.call_fn(set_window_state_c, [flags])
+    return null
+end
+
+public final fun clear_window_state(flags: int) -> void:
+    /// Disables specific window flags at runtime.
+    ///     @param flags: int - The window flags to disable (bitwise OR of FLAG_* constants).
+    ///     @return: void - No return value.
+    if (clear_window_state_c == null):
+        throw "Function 'clear_window_state' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (flags < 0):
+        throw "Flags must be a non-negative integer." from "ValueError"
+    end
+    libload.call_fn(clear_window_state_c, [flags])
+    return null
+end
+
+public final fun get_screen_width() -> int:
+    /// Returns the current width of the screen (display device).
+    ///     @return: int - The current screen width.
+    if (get_screen_width_c == null):
+        throw "Function 'get_screen_width' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_screen_width_c, []) as int
+end
+
+public final fun get_screen_height() -> int:
+    /// Returns the current height of the screen (display device).
+    ///     @return: int - The current screen height.
+    if (get_screen_height_c == null):
+        throw "Function 'get_screen_height' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_screen_height_c, []) as int
+end
+
+public final fun get_render_width() -> int:
+    /// Returns the current width of the render area.
+    ///     @return: int - The current render width.
+    if (get_render_width_c == null):
+        throw "Function 'get_render_width' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_render_width_c, []) as int
+end
+
+public final fun get_render_height() -> int:
+    /// Returns the current height of the render area.
+    ///     @return: int - The current render height.
+    if (get_render_height_c == null):
+        throw "Function 'get_render_height' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_render_height_c, []) as int
+end
+
+public final fun get_monitor_count() -> int:
+    /// Returns the number of connected monitors.
+    ///     @return: int - The number of connected monitors.
+    if (get_monitor_count_c == null):
+        throw "Function 'get_monitor_count' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_monitor_count_c, []) as int
+end
+
+public final fun get_current_monitor() -> int:
+    /// Returns the index of the monitor where the window is currently located.
+    ///     @return: int - The index of the current monitor (0 for primary, 1 for secondary, etc.).
+    if (get_current_monitor_c == null):
+        throw "Function 'get_current_monitor' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_current_monitor_c, []) as int
+end
+
+public final fun get_monitor_width(monitor: int) -> int:
+    /// Returns the width of the specified monitor.
+    ///     @param monitor: int - The monitor index (0 for primary, 1 for secondary, etc.).
+    ///     @return: int - The width of the specified monitor.
+    if (get_monitor_width_c == null):
+        throw "Function 'get_monitor_width' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_monitor_width_c, [monitor]) as int
+end
+
+public final fun get_monitor_height(monitor: int) -> int:
+    /// Returns the height of the specified monitor.
+    ///     @param monitor: int - The monitor index (0 for primary, 1 for secondary, etc.).
+    ///     @return: int - The height of the specified monitor.
+    if (get_monitor_height_c == null):
+        throw "Function 'get_monitor_height' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_monitor_height_c, [monitor]) as int
+end
+
+public final fun get_monitor_refresh_rate(monitor: int) -> int:
+    /// Returns the refresh rate of the specified monitor.
+    ///     @param monitor: int - The monitor index (0 for primary, 1 for secondary, etc.).
+    ///     @return: int - The refresh rate of the specified monitor.
+    if (get_monitor_refresh_rate_c == null):
+        throw "Function 'get_monitor_refresh_rate' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    return libload.call_fn(get_monitor_refresh_rate_c, [monitor]) as int
+end
+
+public final fun get_clipboard_text() -> str:
+    /// Returns the current text content of the clipboard.
+    ///     @return: str - The current clipboard text.
+    if (get_clipboard_text_c == null):
+        throw "Function 'get_clipboard_text' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    clipboard_chars_ptr: &int = libload.call_fn(get_clipboard_text_c, [])
+    if (*clipboard_chars_ptr == 0):
+        return ""
+    end
+    result: str = libload.parse_str_ptr(clipboard_chars_ptr)
+    return result
+end
+
+public final fun set_clipboard_text(text: str) -> void:
+    /// Sets the content of the clipboard to the specified text.
+    ///     @param text: str - The text to set in the clipboard.
+    ///     @return: void - No return value.
+    if (set_clipboard_text_c == null):
+        throw "Function 'set_clipboard_text' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _text: &int = libload.create_str_ptr(text)
+    if (_text == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(set_clipboard_text_c, [_text])
+    return null
+end
+
+public final fun set_fullscreen(fullscreen: bool) -> void:
+    /// Sets the window to fullscreen or windowed mode.
+    ///     @param fullscreen: bool - True to set fullscreen, false for windowed mode.
+    ///     @return: void - No return value.
+    if (fullscreen):
+        _screen_width = &get_screen_width()
+        _screen_height = &get_screen_height()
+        monitor: int = get_current_monitor()
+
+        set_window_size(get_monitor_width(monitor), get_monitor_height(monitor))
+        set_config_flags(FLAG_FULLSCREEN_MODE)
+    else:
+        set_window_size(*_screen_width, *_screen_height)
+        clear_window_state(FLAG_FULLSCREEN_MODE)
+    end
+    return null
+end
+
+public final fun set_window_min_size(width: int, height: int) -> void:
+    /// Sets the minimum size of the window.
+    ///     @param width: int - The minimum width of the window.
+    ///     @param height: int - The minimum height of the window.
+    ///     @return: void - No return value.
+    if (set_window_min_size_c == null):
+        throw "Function 'set_window_min_size' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_min_size_c, [width, height])
+    return null
+end
+
+public final fun set_window_max_size(width: int, height: int) -> void:
+    /// Sets the maximum size of the window.
+    ///     @param width: int - The maximum width of the window.
+    ///     @param height: int - The maximum height of the window.
+    ///     @return: void - No return value.
+    if (set_window_max_size_c == null):
+        throw "Function 'set_window_max_size' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_max_size_c, [width, height])
+    return null
+end
+
+public final fun set_window_opacity(opacity: float) -> void:
+    /// Sets the opacity of the window.
+    ///     @param opacity: float - The opacity value (0.0f to 1.0f).
+    ///     @return: void - No return value.
+    if (set_window_opacity_c == null):
+        throw "Function 'set_window_opacity' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (opacity < 0.0 || opacity > 1.0):
+        throw "Opacity must be between 0.0 and 1.0." from "ValueError"
+    end
+    libload.call_fn(set_window_opacity_c, [opacity])
+    return null
+end
+
+public final fun set_window_focused() -> void:
+    /// Sets the window as focused.
+    ///     @return: void - No return value.
+    if (set_window_focused_c == null):
+        throw "Function 'set_window_focused' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(set_window_focused_c, [])
+    return null
+end
+
+// bindings for lucia
+public final fun set_window_icon(path: str) -> void:
+    /// Sets the window icon from a file.
+    ///     @param path: str - The path to the icon image file.
+    ///     @return: void - No return value.
+    if (set_window_icon_c == null):
+        throw "Function 'set_window_icon' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _path: &int = libload.create_str_ptr(path)
+    if (_path == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(set_window_icon_c, [_path])
+    return null
+end
+
+public final fun set_window_icons(paths: list[str]) -> void:
+    /// Sets multiple window icons from files.
+    ///     @param paths: list[str] - The path to the icon image files.
+    ///     @param count: int - The number of icon files provided.
+    ///     @return: void - No return value.
+    if (set_window_icons_c == null):
+        throw "Function 'set_window_icons' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(paths) == 0):
+        throw "Paths list cannot be empty." from "ValueError"
+    end
+    _paths: &int = libload.create_str_ptr(" | ".join(paths))
+    _count: int = len(paths)
+    if (_paths == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(set_window_icons_c, [_paths, _count])
+    return null
+end
+
+public final fun get_window_position() -> tuple[int, int]:
+    /// Gets the current position of the window on the screen.
+    ///     @return: tuple[int, int] - A tuple containing the x and y position of the window.
+    if (get_window_position_c == null):
+        throw "Function 'get_window_position' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    ret: str = libload.parse_str_ptr(libload.call_fn(get_window_position_c, []))
+    if (ret == null):
+        throw "Failed to retrieve window position." from "RuntimeError"
+    end
+    pos: tuple[int, int] = ret.split("|").map((s) => s.to_int()).collect() as tuple
+    return pos
+end
+
+public final fun get_window_scale_dpi() -> tuple[float, float]:
+    /// Gets the scale DPI factor of the window.
+    ///     @return: tuple[float, float] - A tuple containing the x and y scale DPI factors.
+    if (get_window_scale_dpi_c == null):
+        throw "Function 'get_window_scale_dpi' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    ret: str = libload.parse_str_ptr(libload.call_fn(get_window_scale_dpi_c, []))
+    if (ret == null):
+        throw "Failed to retrieve window scale DPI." from "RuntimeError"
+    end
+    scale: tuple[float, float] = ret.split("|").map((s) => s.to_float()).collect() as tuple
+    return scale
+end
+
+private mutable _screen_width: &int = &get_screen_width()
+private mutable _screen_height: &int = &get_screen_height()
+
+public final InitWindow: function = init_window
+public final CloseWindow: function = close_window
+public final WindowShouldClose: function = window_should_close
+public final IsWindowReady: function = is_window_ready
+public final IsWindowMinimized: function = is_window_minimized
+public final IsWindowMaximized: function = is_window_maximized
+public final IsWindowFocused: function = is_window_focused
+public final IsWindowResized: function = is_window_resized
+public final IsWindowHidden: function = is_window_hidden
+public final IsWindowFullscreen: function = is_window_fullscreen
+public final ToggleFullscreen: function = toggle_fullscreen
+public final ToggleMaximize: function = toggle_maximize
+public final ToggleBorderlessWindowed: function = toggle_borderless_windowed
+public final MaximizeWindow: function = maximize_window
+public final MinimizeWindow: function = minimize_window
+public final RestoreWindow: function = restore_window
+public final SetWindowTitle: function = set_window_title
+public final SetWindowPosition: function = set_window_position
+public final SetWindowSize: function = set_window_size
+public final SetWindowMonitor: function = set_window_monitor
+public final SetConfigFlags: function = set_config_flags
+public final SetWindowState: function = set_window_state
+public final ClearWindowState: function = clear_window_state
+public final GetScreenWidth: function = get_screen_width
+public final GetScreenHeight: function = get_screen_height
+public final GetRenderWidth: function = get_render_width
+public final GetRenderHeight: function = get_render_height
+public final GetMonitorCount: function = get_monitor_count
+public final GetCurrentMonitor: function = get_current_monitor
+public final GetMonitorWidth: function = get_monitor_width
+public final GetMonitorHeight: function = get_monitor_height
+public final GetMonitorRefreshRate: function = get_monitor_refresh_rate
+public final GetClipboardText: function = get_clipboard_text
+public final SetClipboardText: function = set_clipboard_text
+public final SetFullscreen: function = set_fullscreen
+
+// bindings for lucia
+public final SetWindowIcon: function = set_window_icon
+public final SetWindowIcons: function = set_window_icons
+public final GetWindowPosition: function = get_window_position
+public final GetWindowScaleDPI: function = get_window_scale_dpi
