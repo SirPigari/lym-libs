@@ -38,6 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push changes
+        shell: bash
         run: |
           for i in {1..5}; do
             git pull --rebase https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main || true
@@ -75,6 +76,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push changes
+        shell: bash
         run: |
           for i in {1..5}; do
             git pull --rebase https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main || true
@@ -112,6 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push changes
+        shell: bash
         run: |
           for i in {1..5}; do
             git pull --rebase https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main || true
