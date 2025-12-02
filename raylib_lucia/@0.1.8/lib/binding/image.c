@@ -6,8 +6,6 @@ static Texture2D textures[MAX_TEXTURES];
 static bool textures_used[MAX_TEXTURES] = {0};
 static char texture_paths[MAX_TEXTURES][MAX_PATH_LENGTH];
 
-static char retbuf[64];
-
 static int alloc_id_img(int max) {
     for (int i = 0; i < max; i++) {
         if (!textures_used[i]) {

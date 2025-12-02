@@ -25,3 +25,366 @@ public final BLACK: tuple[int; 4]      = (0, 0, 0, 255)
 public final BLANK: tuple[int; 4]      = (0, 0, 0, 0)
 public final MAGENTA: tuple[int; 4]    = (255, 0, 255, 255)
 public final RAYWHITE: tuple[int; 4]   = (245, 245, 245, 255)
+
+private final fade_c: &int = libload.get_fn(lib_bind, "bind_Fade", ["int", "int", "int", "int", "float"], "str")
+private final color_to_int_c: &int = libload.get_fn(lib_bind, "bind_ColorToInt", ["int", "int", "int", "int"], "int")
+private final color_normalize_c: &int = libload.get_fn(lib_bind, "bind_ColorNormalize", ["int", "int", "int", "int"], "str")
+private final color_from_normalized_c: &int = libload.get_fn(lib_bind, "bind_ColorFromNormalized", ["float", "float", "float", "float"], "str")
+private final color_to_hsv_c: &int = libload.get_fn(lib_bind, "bind_ColorToHSV", ["int", "int", "int", "int"], "str")
+private final color_from_hsv_c: &int = libload.get_fn(lib_bind, "bind_ColorFromHSV", ["float", "float", "float"], "str")
+private final color_tint_c: &int = libload.get_fn(lib_bind, "bind_ColorTint", ["int", "int", "int", "int", "int", "int", "int", "int"], "str")
+private final color_brightness_c: &int = libload.get_fn(lib_bind, "bind_ColorBrightness", ["int", "int", "int", "int", "float"], "str")
+private final color_contrast_c: &int = libload.get_fn(lib_bind, "bind_ColorContrast", ["int", "int", "int", "int", "float"], "str")
+private final color_alpha_c: &int = libload.get_fn(lib_bind, "bind_ColorAlpha", ["int", "int", "int", "int", "float"], "str")
+private final color_alpha_blend_c: &int = libload.get_fn(lib_bind, "bind_ColorAlphaBlend", ["int", "int", "int", "int", "int", "int", "int", "int", "int", "int", "int"], "str")
+private final color_lerp_c: &int = libload.get_fn(lib_bind, "bind_ColorLerp", ["int", "int", "int", "int", "int", "int", "int", "int", "float"], "str")
+private final get_color_c: &int = libload.get_fn(lib_bind, "bind_GetColor", ["int"], "str")
+
+private final fun parse_color_str_to_tuple_int4(color_str: str) -> tuple[int; 4]:
+    /// Parses a string representation of a color into a tuple of 4 integers (RGBA).
+    ///     @param color_str: str - The string representation of the color.
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    parts: list[str] = color_str.split("|")
+    if (len(parts) != 4):
+        throw "Invalid color string format." from "ValueError"
+    end
+    r: int = parts[0].to_int()
+    g: int = parts[1].to_int()
+    b: int = parts[2].to_int()
+    a: int = parts[3].to_int()
+    color_tuple := (r, g, b, a)
+    return color_tuple
+end
+
+public final fun fade(color: tuple[int; 4], alpha: float) -> tuple[int; 4]:
+    /// Get color with alpha applied, alpha goes from 0.0f to 1.0f.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @param alpha: float - The alpha value to apply (0.0 to 1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the faded RGBA color (0-255).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (fade_c == null):
+        throw "Function 'fade' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(fade_c, [color[0], color[1], color[2], color[3], alpha]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_to_int(color: tuple[int; 4]) -> int:
+    /// Get hexadecimal value for a Color (0xRRGGBBAA).
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: int - The hexadecimal value of the color.
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (color_to_int_c == null):
+        throw "Function 'color_to_int' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(color_to_int_c, [color[0], color[1], color[2], color[3]])
+    return result
+end
+
+public final fun color_normalize(color: tuple[int; 4]) -> tuple[float; 4]:
+    /// Get Color normalized as float [0..1].
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: tuple[float; 4] - A tuple of 4 floats representing normalized RGBA color (0.0-1.0).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (color_normalize_c == null):
+        throw "Function 'color_normalize' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_normalize_c, [color[0], color[1], color[2], color[3]]))
+    parts: list[str] = result_str.split("|")
+    if (len(parts) != 4):
+        throw "Invalid color string format." from "ValueError"
+    end
+    r: float = parts[0] as float
+    g: float = parts[1] as float
+    b: float = parts[2] as float
+    a: float = parts[3] as float
+    color_tuple := (r, g, b, a)
+    return color_tuple
+end
+
+public final fun color_from_normalized(normalized: tuple[float; 4]) -> tuple[int; 4]:
+    /// Get Color from normalized values [0..1].
+    ///     @param normalized: tuple[float; 4] - A tuple of 4 floats representing normalized RGBA color (0.0-1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    if (len(normalized) != 4):
+        throw "Normalized color must be a tuple of 4 floats (RGBA)." from "ValueError"
+    end
+    for (c in normalized):
+        if (c < 0.0 || c > 1.0):
+            throw "Normalized color values must be in the range 0.0-1.0." from "ValueError"
+        end
+    end
+    if (color_from_normalized_c == null):
+        throw "Function 'color_from_normalized' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_from_normalized_c, [normalized[0], normalized[1], normalized[2], normalized[3]]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_to_hsv(color: tuple[int; 4]) -> tuple[float; 3]:
+    /// Get HSV values for a Color, hue [0..360], saturation/value [0..1].
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: tuple[float; 3] - A tuple of 3 floats representing HSV values (hue, saturation, value).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (color_to_hsv_c == null):
+        throw "Function 'color_to_hsv' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_to_hsv_c, [color[0], color[1], color[2], color[3]]))
+    parts: list[str] = result_str.split("|")
+    if (len(parts) != 3):
+        throw "Invalid HSV string format." from "ValueError"
+    end
+    h: float = parts[0] as float
+    s: float = parts[1] as float
+    v: float = parts[2] as float
+    hsv_tuple := (h, s, v)
+    return hsv_tuple
+end
+
+public final fun color_from_hsv(hue: float, saturation: float, value: float) -> tuple[int; 4]:
+    /// Get a Color from HSV values, hue [0..360], saturation/value [0..1].
+    ///     @param hue: float - The hue value (0.0 to 360.0).
+    ///     @param saturation: float - The saturation value (0.0 to 1.0).
+    ///     @param value: float - The value/brightness (0.0 to 1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    if (hue < 0.0 || hue > 360.0):
+        throw "Hue must be in the range 0.0-360.0." from "ValueError"
+    end
+    if (saturation < 0.0 || saturation > 1.0):
+        throw "Saturation must be in the range 0.0-1.0." from "ValueError"
+    end
+    if (value < 0.0 || value > 1.0):
+        throw "Value must be in the range 0.0-1.0." from "ValueError"
+    end
+    if (color_from_hsv_c == null):
+        throw "Function 'color_from_hsv' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_from_hsv_c, [hue, saturation, value]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_tint(color: tuple[int; 4], tint: tuple[int; 4]) -> tuple[int; 4]:
+    /// Get color multiplied with another color.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing RGBA tint color (0-255).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the tinted RGBA color (0-255).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(tint) != 4):
+        throw "Tint color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (color_tint_c == null):
+        throw "Function 'color_tint' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_tint_c, [color[0], color[1], color[2], color[3], tint[0], tint[1], tint[2], tint[3]]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_brightness(color: tuple[int; 4], factor: float) -> tuple[int; 4]:
+    /// Get color with brightness correction, brightness factor goes from -1.0f to 1.0f.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @param factor: float - The brightness factor (-1.0 to 1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the brightness-corrected RGBA color (0-255).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (factor < -1.0 || factor > 1.0):
+        throw "Brightness factor must be in the range -1.0 to 1.0." from "ValueError"
+    end
+    if (color_brightness_c == null):
+        throw "Function 'color_brightness' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_brightness_c, [color[0], color[1], color[2], color[3], factor]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_contrast(color: tuple[int; 4], contrast: float) -> tuple[int; 4]:
+    /// Get color with contrast correction, contrast values between -1.0f and 1.0f.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @param contrast: float - The contrast value (-1.0 to 1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the contrast-corrected RGBA color (0-255).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (contrast < -1.0 || contrast > 1.0):
+        throw "Contrast value must be in the range -1.0 to 1.0." from "ValueError"
+    end
+    if (color_contrast_c == null):
+        throw "Function 'color_contrast' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_contrast_c, [color[0], color[1], color[2], color[3], contrast]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_alpha(color: tuple[int; 4], alpha: float) -> tuple[int; 4]:
+    /// Get color with alpha applied, alpha goes from 0.0f to 1.0f.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @param alpha: float - The alpha value to apply (0.0 to 1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the RGBA color with applied alpha (0-255).
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (color_alpha_c == null):
+        throw "Function 'color_alpha' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_alpha_c, [color[0], color[1], color[2], color[3], alpha]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_alpha_blend(dst: tuple[int; 4], src: tuple[int; 4], tint: tuple[int; 4]) -> tuple[int; 4]:
+    /// Get src alpha-blended into dst color with tint.
+    ///     @param dst: tuple[int; 4] - A tuple of 4 integers representing the destination RGBA color (0-255).
+    ///     @param src: tuple[int; 4] - A tuple of 4 integers representing the source RGBA color (0-255).
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing the tint RGBA color (0-255).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the alpha-blended RGBA color (0-255).
+    if (len(dst) != 4):
+        throw "Destination color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in dst):
+        if (c < 0 || c > 255):
+            throw "Destination color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(src) != 4):
+        throw "Source color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in src):
+        if (c < 0 || c > 255):
+            throw "Source color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(tint) != 4):
+        throw "Tint color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (color_alpha_blend_c == null):
+        throw "Function 'color_alpha_blend' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_alpha_blend_c, [dst[0], dst[1], dst[2], dst[3], src[0], src[1], src[2], src[3], tint[0], tint[1], tint[2], tint[3]]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun color_lerp(color1: tuple[int; 4], color2: tuple[int; 4], factor: float) -> tuple[int; 4]:
+    /// Get color lerp interpolation between two colors, factor [0.0f..1.0f].
+    ///     @param color1: tuple[int; 4] - A tuple of 4 integers representing the first RGBA color (0-255).
+    ///     @param color2: tuple[int; 4] - A tuple of 4 integers representing the second RGBA color (0-255).
+    ///     @param factor: float - The interpolation factor (0.0 to 1.0).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing the interpolated RGBA color (0-255).
+    if (len(color1) != 4):
+        throw "First color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color1):
+        if (c < 0 || c > 255):
+            throw "First color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(color2) != 4):
+        throw "Second color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color2):
+        if (c < 0 || c > 255):
+            throw "Second color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (factor < 0.0 || factor > 1.0):
+        throw "Interpolation factor must be in the range 0.0 to 1.0." from "ValueError"
+    end
+    if (color_lerp_c == null):
+        throw "Function 'color_lerp' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(color_lerp_c, [color1[0], color1[1], color1[2], color1[3], color2[0], color2[1], color2[2], color2[3], factor]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final fun get_color(hex_value: int) -> tuple[int; 4]:
+    /// Get Color structure from hexadecimal value.
+    ///     @param hex_value: int - The hexadecimal value of the color (0xRRGGBBAA).
+    ///     @return: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    if (get_color_c == null):
+        throw "Function 'get_color' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result_str: str = libload.parse_str_ptr(libload.call_fn(get_color_c, [hex_value]))
+    result_tuple: tuple[int; 4] = parse_color_str_to_tuple_int4(result_str)
+    return result_tuple
+end
+
+public final Fade: function = fade
+public final ColorToInt: function = color_to_int
+public final ColorNormalize: function = color_normalize
+public final ColorFromNormalized: function = color_from_normalized
+public final ColorToHSV: function = color_to_hsv
+public final ColorFromHSV: function = color_from_hsv
+public final ColorTint: function = color_tint
+public final ColorBrightness: function = color_brightness
+public final ColorContrast: function = color_contrast
+public final ColorAlpha: function = color_alpha
+public final ColorAlphaBlend: function = color_alpha_blend
+public final ColorLerp: function = color_lerp
+public final GetColor: function = get_color

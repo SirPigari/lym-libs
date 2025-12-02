@@ -124,6 +124,21 @@ static void (*fp_SetAudioStreamPan)(AudioStream, float) = NULL;
 
 static void (*fp_TraceLog)(int, const char*, ...) = NULL;
 
+// Color functions
+static Color (*fp_Fade)(Color, float) = NULL;
+static int (*fp_ColorToInt)(Color) = NULL;
+static Vector4 (*fp_ColorNormalize)(Color) = NULL;
+static Color (*fp_ColorFromNormalized)(Vector4) = NULL;
+static Vector3 (*fp_ColorToHSV)(Color) = NULL;
+static Color (*fp_ColorFromHSV)(float, float, float) = NULL;
+static Color (*fp_ColorTint)(Color, Color) = NULL;
+static Color (*fp_ColorBrightness)(Color, float) = NULL;
+static Color (*fp_ColorContrast)(Color, float) = NULL;
+static Color (*fp_ColorAlpha)(Color, float) = NULL;
+static Color (*fp_ColorAlphaBlend)(Color, Color, Color) = NULL;
+static Color (*fp_ColorLerp)(Color, Color, float) = NULL;
+static Color (*fp_GetColor)(unsigned int) = NULL;
+
 static bool raylib_loaded = false;
 static void* raylib_lib = NULL;
 
@@ -217,6 +232,21 @@ static void load_raylib() {
     fp_SetAudioStreamPan = get_symbol(raylib_lib, "SetAudioStreamPan");
 
     fp_TraceLog = get_symbol(raylib_lib, "TraceLog");
+    
+    // Color functions
+    fp_Fade = get_symbol(raylib_lib, "Fade");
+    fp_ColorToInt = get_symbol(raylib_lib, "ColorToInt");
+    fp_ColorNormalize = get_symbol(raylib_lib, "ColorNormalize");
+    fp_ColorFromNormalized = get_symbol(raylib_lib, "ColorFromNormalized");
+    fp_ColorToHSV = get_symbol(raylib_lib, "ColorToHSV");
+    fp_ColorFromHSV = get_symbol(raylib_lib, "ColorFromHSV");
+    fp_ColorTint = get_symbol(raylib_lib, "ColorTint");
+    fp_ColorBrightness = get_symbol(raylib_lib, "ColorBrightness");
+    fp_ColorContrast = get_symbol(raylib_lib, "ColorContrast");
+    fp_ColorAlpha = get_symbol(raylib_lib, "ColorAlpha");
+    fp_ColorAlphaBlend = get_symbol(raylib_lib, "ColorAlphaBlend");
+    fp_ColorLerp = get_symbol(raylib_lib, "ColorLerp");
+    fp_GetColor = get_symbol(raylib_lib, "GetColor");
 
     raylib_loaded = true;
 }
@@ -303,3 +333,18 @@ RLAPI void TraceLog(int logLevel, const char* text, ...) {
         fp_TraceLog(logLevel, "%s", buffer);
     }
 }
+
+// Color functions
+RLAPI Color Fade(Color color, float alpha) { load_raylib(); return fp_Fade ? fp_Fade(color, alpha) : color; }
+RLAPI int ColorToInt(Color color) { load_raylib(); return fp_ColorToInt ? fp_ColorToInt(color) : 0; }
+RLAPI Vector4 ColorNormalize(Color color) { load_raylib(); return fp_ColorNormalize ? fp_ColorNormalize(color) : (Vector4){0, 0, 0, 0}; }
+RLAPI Color ColorFromNormalized(Vector4 normalized) { load_raylib(); return fp_ColorFromNormalized ? fp_ColorFromNormalized(normalized) : (Color){0, 0, 0, 0}; }
+RLAPI Vector3 ColorToHSV(Color color) { load_raylib(); return fp_ColorToHSV ? fp_ColorToHSV(color) : (Vector3){0, 0, 0}; }
+RLAPI Color ColorFromHSV(float hue, float saturation, float value) { load_raylib(); return fp_ColorFromHSV ? fp_ColorFromHSV(hue, saturation, value) : (Color){0, 0, 0, 0}; }
+RLAPI Color ColorTint(Color color, Color tint) { load_raylib(); return fp_ColorTint ? fp_ColorTint(color, tint) : color; }
+RLAPI Color ColorBrightness(Color color, float factor) { load_raylib(); return fp_ColorBrightness ? fp_ColorBrightness(color, factor) : color; }
+RLAPI Color ColorContrast(Color color, float contrast) { load_raylib(); return fp_ColorContrast ? fp_ColorContrast(color, contrast) : color; }
+RLAPI Color ColorAlpha(Color color, float alpha) { load_raylib(); return fp_ColorAlpha ? fp_ColorAlpha(color, alpha) : color; }
+RLAPI Color ColorAlphaBlend(Color dst, Color src, Color tint) { load_raylib(); return fp_ColorAlphaBlend ? fp_ColorAlphaBlend(dst, src, tint) : dst; }
+RLAPI Color ColorLerp(Color color1, Color color2, float factor) { load_raylib(); return fp_ColorLerp ? fp_ColorLerp(color1, color2, factor) : color1; }
+RLAPI Color GetColor(unsigned int hexValue) { load_raylib(); return fp_GetColor ? fp_GetColor(hexValue) : (Color){0, 0, 0, 0}; }

@@ -19,9 +19,6 @@ static bool musics_used[MAX_MUSICS] = {0};
 static AudioStream streams[MAX_STREAMS];
 static bool streams_used[MAX_STREAMS] = {0};
 
-// unsafe return buffer
-// if fails its your skill issue
-static char retbuf[64];
 // helpers
 static int alloc_id_audio(bool *used, int max) {
     for (int i = 0; i < max; i++) {
