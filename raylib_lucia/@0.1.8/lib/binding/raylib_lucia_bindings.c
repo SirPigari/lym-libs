@@ -31,6 +31,7 @@ static char retbuf[64];
 #include "audio.c"
 // image stuff
 #include "image.c"
+
 // void SetWindowIcon(Image image);
 RLAPI void bind_SetWindowIcon(const char *path) {
     Image img = LoadImage(path);
