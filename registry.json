@@ -23,7 +23,7 @@
         "Markofwitch"
       ],
       "description": "Raylib bindings for Lucia.",
-      "latest_version": "0.1.7",
+      "latest_version": "0.1.8",
       "names": [
         "raylib"
       ]
