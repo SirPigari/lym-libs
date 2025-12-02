@@ -23,7 +23,7 @@ jobs:
       - name: Build build linux
         run: |
           cd "raylib_lucia/@0.1.8"
-          gcc -shared -fPIC -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -ldl
+          gcc -shared -fPIC -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -ldl -O3
 
       - name: Move artifacts to destination
         run: |
@@ -61,7 +61,7 @@ jobs:
       - name: Build build windows
         run: |
           cd "raylib_lucia/@0.1.8"
-          gcc .\lib\binding\raylib_lucia_bindings.c -o .\lib\raylib_lucia.dll -shared
+          gcc .\lib\binding\raylib_lucia_bindings.c -o .\lib\raylib_lucia.dll -shared -O3
 
       - name: Move artifacts to destination
         run: |
@@ -99,7 +99,7 @@ jobs:
       - name: Build build macos
         run: |
           cd "raylib_lucia/@0.1.8"
-          gcc -shared -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -lm
+          gcc -shared -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -lm -O3
 
       - name: Move artifacts to destination
         run: |
