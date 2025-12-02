@@ -23,7 +23,7 @@ static bool streams_used[MAX_STREAMS] = {0};
 // if fails its your skill issue
 static char retbuf[64];
 // helpers
-static int alloc_id(bool *used, int max) {
+static int alloc_id_audio(bool *used, int max) {
     for (int i = 0; i < max; i++) {
         if (!used[i]) {
             used[i] = true;
@@ -33,13 +33,13 @@ static int alloc_id(bool *used, int max) {
     return -1;
 }
 
-static void free_id(bool *used, int id) {
+static void free_id_audio(bool *used, int id) {
     used[id] = false;
 }
 
 // Waves
 RLAPI const char* bind_PlayWave(const char *fileName, float volume, float pitch, float pan) {
-    int idx = alloc_id(waves_used, MAX_WAVES);
+    int idx = alloc_id_audio(waves_used, MAX_WAVES);
     if (idx == -1) return "ERR: No free wave slots";
     waves[idx] = LoadWave(fileName);
     if (!IsWaveValid(waves[idx])) return "ERR: Failed to load wave";
@@ -51,13 +51,13 @@ RLAPI const char* bind_PlayWave(const char *fileName, float volume, float pitch,
     PlaySound(s);
     UnloadSound(s);
     UnloadWave(waves[idx]);
-    free_id(waves_used, idx);
+    free_id_audio(waves_used, idx);
     return "";
 }
 
 // Sounds
 RLAPI const char* bind_PlaySound(const char *fileName, float volume, float pitch, float pan) {
-    int idx = alloc_id(sounds_used, MAX_SOUNDS);
+    int idx = alloc_id_audio(sounds_used, MAX_SOUNDS);
     if (idx == -1) return "ERR: No free sound slots";
     sounds[idx] = LoadSound(fileName);
     if (!IsSoundValid(sounds[idx])) return "ERR: Failed to load sound";
@@ -78,7 +78,7 @@ RLAPI const char* bind_StopSound(int id) {
 RLAPI const char* bind_UnloadSound(int id) {
     if (id < 0 || id >= MAX_SOUNDS || !sounds_used[id]) return "ERR: Invalid sound id";
     UnloadSound(sounds[id]);
-    free_id(sounds_used, id);
+    free_id_audio(sounds_used, id);
     return "";
 }
 
@@ -101,7 +101,7 @@ RLAPI const char* bind_IsSoundPlaying(int id) {
 
 // Music
 RLAPI const char* bind_PlayMusicStream(const char *fileName, float volume, float pitch, float pan) {
-    int idx = alloc_id(musics_used, MAX_MUSICS);
+    int idx = alloc_id_audio(musics_used, MAX_MUSICS);
     if (idx == -1) return "ERR: No free music slots";
     musics[idx] = LoadMusicStream(fileName);
     if (!IsMusicValid(musics[idx])) return "ERR: Failed to load music";
@@ -123,7 +123,7 @@ RLAPI const char* bind_StopMusicStream(int id) {
 RLAPI const char* bind_UnloadMusicStream(int id) {
     if (id < 0 || id >= MAX_MUSICS || !musics_used[id]) return "ERR: Invalid music id";
     UnloadMusicStream(musics[id]);
-    free_id(musics_used, id);
+    free_id_audio(musics_used, id);
     return "";
 }
 
@@ -146,7 +146,7 @@ RLAPI const char* bind_IsMusicStreamPlaying(int id) {
 
 // AudioStreams
 RLAPI const char* bind_PlayAudioStream(const char *name, unsigned int sampleRate, unsigned int sampleSize, unsigned int channels, float volume, float pitch, float pan) {
-    int idx = alloc_id(streams_used, MAX_STREAMS);
+    int idx = alloc_id_audio(streams_used, MAX_STREAMS);
     if (idx == -1) return "ERR: No free audio stream slots";
     streams[idx] = LoadAudioStream(sampleRate, sampleSize, channels);
     if (!IsAudioStreamValid(streams[idx])) return "ERR: Failed to load audio stream";
@@ -167,7 +167,7 @@ RLAPI const char* bind_StopAudioStream(int id) {
 RLAPI const char* bind_UnloadAudioStream(int id) {
     if (id < 0 || id >= MAX_STREAMS || !streams_used[id]) return "ERR: Invalid audio stream id";
     UnloadAudioStream(streams[id]);
-    free_id(streams_used, id);
+    free_id_audio(streams_used, id);
     return "";
 }
 

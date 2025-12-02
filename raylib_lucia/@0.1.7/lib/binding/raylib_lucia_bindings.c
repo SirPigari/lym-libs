@@ -1,4 +1,4 @@
-#include "raylib.h"
+#include "load_raylib.c"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -25,6 +25,8 @@
 
 // audio stuff
 #include "audio.c"
+// image stuff
+#include "image.c"
 
 // void SetWindowIcon(Image image);
 RLAPI void bind_SetWindowIcon(const char *path) {

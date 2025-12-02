@@ -8,10 +8,10 @@ private final draw_line_c: &int = libload.get_fn(lib, "DrawLine", ["int", "int",
 private final draw_circle_c: &int = libload.get_fn(lib, "DrawCircle", ["int", "int", "float32", "ptr"], "void")
 private final draw_circle_lines_c: &int = libload.get_fn(lib, "DrawCircleLines", ["int", "int", "float32", "ptr"], "void")
 
-private final draw_triangle_c: &int = libload.get_fn(lib_lucia, "bind_DrawTriangle", ["str", "byte", "byte", "byte", "byte"], "void")
-private final draw_triangle_lines_c: &int = libload.get_fn(lib_lucia, "bind_DrawTriangleLines", ["str", "byte", "byte", "byte", "byte"], "void")
-private final draw_poly_c: &int = libload.get_fn(lib_lucia, "bind_DrawPoly", ["str", "int", "float32", "float32", "byte", "byte", "byte", "byte"], "void")
-private final draw_poly_lines_c: &int = libload.get_fn(lib_lucia, "bind_DrawPolyLines", ["str", "int", "float32", "float32", "byte", "byte", "byte", "byte"], "void")
+private final draw_triangle_c: &int = libload.get_fn(lib_bind, "bind_DrawTriangle", ["str", "byte", "byte", "byte", "byte"], "void")
+private final draw_triangle_lines_c: &int = libload.get_fn(lib_bind, "bind_DrawTriangleLines", ["str", "byte", "byte", "byte", "byte"], "void")
+private final draw_poly_c: &int = libload.get_fn(lib_bind, "bind_DrawPoly", ["str", "int", "float32", "float32", "byte", "byte", "byte", "byte"], "void")
+private final draw_poly_lines_c: &int = libload.get_fn(lib_bind, "bind_DrawPolyLines", ["str", "int", "float32", "float32", "byte", "byte", "byte", "byte"], "void")
 
 public final fun begin_drawing() -> void:
     /// Begins drawing to the window.

@@ -50,12 +50,12 @@ private final get_gesture_drag_angle_c: &int = libload.get_fn(lib, "GetGestureDr
 private final get_gesture_pinch_angle_c: &int = libload.get_fn(lib, "GetGesturePinchAngle", [], "float")
 
 // bindings for lucia
-private final get_mouse_position_c: &int = libload.get_fn(lib_lucia, "bind_GetMousePosition", [], "str")
-private final get_mouse_delta_c: &int = libload.get_fn(lib_lucia, "bind_GetMouseDelta", [], "str")
-private final get_mouse_wheel_move_v_c: &int = libload.get_fn(lib_lucia, "bind_GetMouseWheelMoveV", [], "str")
-private final get_touch_position_c: &int = libload.get_fn(lib_lucia, "bind_GetTouchPosition", ["int"], "str")
-private final get_gesture_pinch_vector_c: &int = libload.get_fn(lib_lucia, "bind_GetGesturePinchVector", [], "str")
-private final get_gesture_drag_vector_c: &int = libload.get_fn(lib_lucia, "bind_GetGestureDragVector", [], "str")
+private final get_mouse_position_c: &int = libload.get_fn(lib_bind, "bind_GetMousePosition", [], "str")
+private final get_mouse_delta_c: &int = libload.get_fn(lib_bind, "bind_GetMouseDelta", [], "str")
+private final get_mouse_wheel_move_v_c: &int = libload.get_fn(lib_bind, "bind_GetMouseWheelMoveV", [], "str")
+private final get_touch_position_c: &int = libload.get_fn(lib_bind, "bind_GetTouchPosition", ["int"], "str")
+private final get_gesture_pinch_vector_c: &int = libload.get_fn(lib_bind, "bind_GetGesturePinchVector", [], "str")
+private final get_gesture_drag_vector_c: &int = libload.get_fn(lib_bind, "bind_GetGestureDragVector", [], "str")
 
 // using 'scope (*)' to group related functions and constants
 // doesnt do anything just for folding in editor

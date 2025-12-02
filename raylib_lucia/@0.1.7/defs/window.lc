@@ -39,10 +39,10 @@ private final set_window_opacity_c: &int = libload.get_fn(lib, "SetWindowOpacity
 private final set_window_focused_c: &int = libload.get_fn(lib, "SetWindowFocused", [], "void")
 
 // bindings for lucia
-private final set_window_icon_c: &int = libload.get_fn(lib_lucia, "bind_SetWindowIcon", ["str"], "void")
-private final set_window_icons_c: &int = libload.get_fn(lib_lucia, "bind_SetWindowIcons", ["str", "int"], "void")
-private final get_window_position_c: &int = libload.get_fn(lib_lucia, "bind_GetWindowPosition", [], "str")
-private final get_window_scale_dpi_c: &int = libload.get_fn(lib_lucia, "bind_GetWindowScaleDPI", [], "str")
+private final set_window_icon_c: &int = libload.get_fn(lib_bind, "bind_SetWindowIcon", ["str"], "void")
+private final set_window_icons_c: &int = libload.get_fn(lib_bind, "bind_SetWindowIcons", ["str", "int"], "void")
+private final get_window_position_c: &int = libload.get_fn(lib_bind, "bind_GetWindowPosition", [], "str")
+private final get_window_scale_dpi_c: &int = libload.get_fn(lib_bind, "bind_GetWindowScaleDPI", [], "str")
 
 public final FLAG_VSYNC_HINT: int           = 0x00000040  // 1 << 6
 public final FLAG_FULLSCREEN_MODE: int      = 0x00000002  // 1 << 1

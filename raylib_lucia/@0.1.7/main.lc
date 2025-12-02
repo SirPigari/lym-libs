@@ -8,10 +8,10 @@ import fs
 // Currently in development. Only a subset of functions are implemented.
 
 public final RAYLIB_VERSION: str = "5.5.0"
-public final RAYLIB_LUCIA_VERSION: str = "0.1.7"
+public final RAYLIB_LUCIA_VERSION: str = "0.1.8"
 
 private mutable lib: ?&int = null
-private mutable lib_lucia: ?&int = null
+private mutable lib_bind: ?&int = null
 
 match (os.os_name()):
     "Windows":
@@ -21,8 +21,9 @@ match (os.os_name()):
         if (!fs.file_exists(__dir__ + "lib/raylib_lucia.dll")):
             throw f"raylib_lucia.dll not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
         end
+        libload.set_dll_directory(__dir__ + "lib/")
         lib = libload.load_lib(__dir__ + "lib/raylib.dll")
-        lib_lucia = libload.load_lib(__dir__ + "lib/raylib_lucia.dll")
+        lib_bind = libload.load_lib(__dir__ + "lib/raylib_lucia.dll")
     end
     "Linux":
         if (!fs.file_exists(__dir__ + "lib/raylib.so")):
@@ -32,7 +33,7 @@ match (os.os_name()):
             throw f"raylib_lucia.so not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
         end
         lib = libload.load_lib(__dir__ + "lib/raylib.so")
-        lib_lucia = libload.load_lib(__dir__ + "lib/raylib_lucia.so")
+        lib_bind = libload.load_lib(__dir__ + "lib/raylib_lucia.so")
     end
     "Darwin":
         if (!fs.file_exists(__dir__ + "lib/raylib.dylib")):
@@ -42,7 +43,7 @@ match (os.os_name()):
             throw f"raylib_lucia.dylib not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
         end
         lib = libload.load_lib(__dir__ + "lib/raylib.dylib")
-        lib_lucia = libload.load_lib(__dir__ + "lib/raylib_lucia.dylib")
+        lib_bind = libload.load_lib(__dir__ + "lib/raylib_lucia.dylib")
     end
     _ ->
         throw f"Unsupported OS: {os.os_name()}" from "UnsupportedOSError"
@@ -61,7 +62,8 @@ end
 #include "defs/input.lc"
 #include "defs/audio.lc"
 #include "defs/colors.lc"
+#include "defs/image.lc"
 
 // Clean up
 lib = libload.unload_lib(lib)
-lib_lucia = libload.unload_lib(lib_lucia)
+lib_bind = libload.unload_lib(lib_bind)
