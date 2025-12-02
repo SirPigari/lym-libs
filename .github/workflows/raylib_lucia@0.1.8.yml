@@ -1,0 +1,90 @@
+name: Build Artifacts for raylib_lucia@0.1.8
+
+on:
+  push:
+    paths:
+      - 'raylib_lucia/@0.1.8/**'
+
+jobs:
+  build-linux-0:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc
+
+      - name: Build build linux
+        run: |
+          cd "raylib_lucia/@0.1.8"
+          gcc -shared -fPIC -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -ldl
+
+      - name: Move artifacts to destination
+        run: |
+          mkdir -p "raylib_lucia/@0.1.8/lib"
+          mv "raylib_lucia/@0.1.8/lib/raylib_lucia.so" "raylib_lucia/@0.1.8/lib/raylib_lucia.so"
+
+      - name: Commit artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Add build linux artifacts for raylib_lucia@0.1.8" || exit 0
+          git push
+  build-windows-1:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          choco install mingw -y
+
+      - name: Build build windows
+        run: |
+          cd "raylib_lucia/@0.1.8"
+          gcc .\lib\binding\raylib_lucia_bindings.c -o .\lib\raylib_lucia.dll -shared
+
+      - name: Move artifacts to destination
+        run: |
+          mkdir -p "raylib_lucia/@0.1.8/lib"
+          mv "raylib_lucia/@0.1.8/lib/raylib_lucia.dll" "raylib_lucia/@0.1.8/lib/raylib_lucia.dll"
+
+      - name: Commit artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Add build windows artifacts for raylib_lucia@0.1.8" || exit 0
+          git push
+  build-macos-2:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install gcc
+
+      - name: Build build macos
+        run: |
+          cd "raylib_lucia/@0.1.8"
+          gcc -shared -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -lm
+
+      - name: Move artifacts to destination
+        run: |
+          mkdir -p "raylib_lucia/@0.1.8/lib"
+          mv "raylib_lucia/@0.1.8/lib/raylib_lucia.dylib" "raylib_lucia/@0.1.8/lib/raylib_lucia.dylib"
+
+      - name: Commit artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Add build macos artifacts for raylib_lucia@0.1.8" || exit 0
+          git push
