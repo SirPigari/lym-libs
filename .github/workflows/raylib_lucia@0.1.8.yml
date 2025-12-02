@@ -24,8 +24,6 @@ jobs:
 
       - name: Move artifacts to destination
         run: |
-          mkdir -p "raylib_lucia/@0.1.8/lib"
-          mv "raylib_lucia/@0.1.8/lib/raylib_lucia.so" "raylib_lucia/@0.1.8/lib/raylib_lucia.so"
 
       - name: Commit artifacts
         run: |
@@ -51,8 +49,6 @@ jobs:
 
       - name: Move artifacts to destination
         run: |
-          mkdir -p "raylib_lucia/@0.1.8/lib"
-          mv "raylib_lucia/@0.1.8/lib/raylib_lucia.dll" "raylib_lucia/@0.1.8/lib/raylib_lucia.dll"
 
       - name: Commit artifacts
         run: |
@@ -78,8 +74,6 @@ jobs:
 
       - name: Move artifacts to destination
         run: |
-          mkdir -p "raylib_lucia/@0.1.8/lib"
-          mv "raylib_lucia/@0.1.8/lib/raylib_lucia.dylib" "raylib_lucia/@0.1.8/lib/raylib_lucia.dylib"
 
       - name: Commit artifacts
         run: |
