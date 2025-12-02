@@ -1,0 +1,281 @@
+private final load_texture_c: &int = libload.get_fn(lib_bind, "bind_LoadTexture", ["str"], "str")
+private final unload_texture_c: &int = libload.get_fn(lib_bind, "bind_UnloadTexture", ["int"], "str")
+private final is_texture_valid_c: &int = libload.get_fn(lib_bind, "bind_IsTextureValid", ["int"], "bool")
+private final unload_all_textures_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllTextures", [], "void")
+
+private final draw_texture_c: &int = libload.get_fn(lib_bind, "bind_DrawTexture", ["int", "int", "int", "int", "int", "int", "int"], "void")
+private final draw_texture_ex_c: &int = libload.get_fn(lib_bind, "bind_DrawTextureEx", ["int", "int", "int", "float", "float", "int", "int", "int", "int"], "void")
+private final draw_texture_rec_c: &int = libload.get_fn(lib_bind, "bind_DrawTextureRec", ["int", "int", "int", "int", "int", "int", "int", "int", "int", "int", "int"], "void")
+private final draw_texture_pro_c: &int = libload.get_fn(lib_bind, "bind_DrawTexturePro", ["int", "int", "int", "int", "int", "int", "int", "int", "int", "float", "float", "float", "int", "int", "int", "int"], "void")
+
+private final get_texture_width_c: &int = libload.get_fn(lib_bind, "bind_GetTextureWidth", ["int"], "int")
+private final get_texture_height_c: &int = libload.get_fn(lib_bind, "bind_GetTextureHeight", ["int"], "int")
+private final get_texture_path_c: &int = libload.get_fn(lib_bind, "bind_GetTexturePath", ["int"], "str")
+
+public final typedef struct Texture {
+    private id: int,
+    private path: ?str,
+    width: int,
+    height: int,
+}
+
+for Texture:
+    public final fun get_id(self) -> int:
+        return self.id
+    end
+
+    public final fun get_path(self) -> ?str:
+        return self.path
+    end
+end
+
+public final fun load_texture(path: str) -> Texture:
+    /// Loads a texture from the specified file path.
+    ///     @param path: str - The file path to the texture image.
+    ///     @return: Texture - The loaded texture.
+    if (load_texture_c == null):
+        throw "Function 'LoadTexture' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _path: &int = libload.create_str_ptr(path)
+    if (_path == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    text: str = libload.parse_str_ptr(libload.call_fn(load_texture_c, [_path]))
+    if text.startswith("ERR: "):
+        throw f"Failed to load texture from path: {path}. Error: {text[5..]}" from "TextureLoadError"
+    end
+    tex_id: int = -1
+    if text.startswith("ID: "):
+        tex_id = int(text[4..])
+    else:
+        throw f"Failed to load texture from path: {path}. Invalid response: {text}" from "TextureLoadError"
+    end
+    if (tex_id == -1):
+        throw f"Failed to load texture from path: {path}" from "TextureLoadError"
+    end
+    width: int = get_texture_width(tex_id)
+    height: int = get_texture_height(tex_id)
+    texture: Texture = Texture{ id = tex_id, path = path, width, height }
+    return texture
+end
+
+public final fun unload_texture(texture: Texture) -> void:
+    /// Unloads the specified texture from memory.
+    ///     @param texture: Texture - The texture to unload.
+    ///     @return: void - No return value.
+    if (unload_texture_c == null):
+        throw "Function 'UnloadTexture' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: str = libload.parse_str_ptr(libload.call_fn(unload_texture_c, [texture.get_id()]))
+    if result.startswith("ERR: "):
+        throw f"Failed to unload texture ID: {texture.get_id()}. Error: {result[5..]}" from "TextureUnloadError"
+    end
+    return null
+end
+
+public final fun unload_all_textures() -> void:
+    /// Unloads all loaded textures from memory.
+    ///     @return: void - No return value.
+    libload.call_fn(unload_all_textures_c, [])
+    return null
+end
+
+public final fun is_texture_valid(texture: Texture) -> bool:
+    /// Checks if the specified texture is valid.
+    ///     @param texture: Texture - The texture to check.
+    ///     @return: bool - True if the texture is valid, false otherwise.
+    if (is_texture_valid_c == null):
+        throw "Function 'IsTextureValid' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: bool = libload.call_fn(is_texture_valid_c, [texture.get_id()])
+    return result
+end
+
+public final fun draw_texture(
+    texture: Texture,
+    pos_x: int,
+    pos_y: int,
+    tint: tuple[int; 4],
+) -> void:
+    /// Draws the specified texture at the given position with the specified color tint.
+    ///     @param texture: Texture - The texture to draw.
+    ///     @param pos_x: int - The x position to draw the texture.
+    ///     @param pos_y: int - The y position to draw the texture.
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_texture_c == null):
+        throw "Function 'DrawTexture' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(tint) != 4):
+        throw "Tint must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_texture_c, [texture.get_id(), pos_x, pos_y, tint[0], tint[1], tint[2], tint[3]])
+    return null
+end
+
+public final fun draw_texture_ex(
+    texture: Texture,
+    pos_x: int,
+    pos_y: int,
+    rotation: float,
+    scale: float,
+    tint: tuple[int; 4],
+) -> void:
+    /// Draws the specified texture at the given position with rotation, scale, and color tint.
+    ///     @param texture: Texture - The texture to draw.
+    ///     @param pos_x: int - The x position to draw the texture.
+    ///     @param pos_y: int - The y position to draw the texture.
+    ///     @param rotation: float - The rotation angle in degrees.
+    ///     @param scale: float - The scaling factor.
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_texture_ex_c == null):
+        throw "Function 'DrawTextureEx' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(tint) != 4):
+        throw "Tint must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_texture_ex_c, [texture.get_id(), pos_x, pos_y, rotation, scale, tint[0], tint[1], tint[2], tint[3]])
+    return null
+end
+
+public final fun draw_texture_rec(
+    texture: Texture,
+    src_pos: tuple[int, int],
+    src_size: tuple[int, int],
+    pos_x: int,
+    pos_y: int,
+    tint: tuple[int; 4],
+) -> void:
+    /// Draws a part of the specified texture defined by a rectangle at the given position with color tint.
+    ///     @param texture: Texture - The texture to draw.
+    ///     @param src_pos: tuple[int, int] - A tuple representing the source rectangle's (x, y) position.
+    ///     @param src_size: tuple[int, int] - A tuple representing the source rectangle's (width, height) size.
+    ///     @param pos_x: int - The x position to draw the texture.
+    ///     @param pos_y: int - The y position to draw the texture.
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_texture_rec_c == null):
+        throw "Function 'DrawTextureRec' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(tint) != 4):
+        throw "Tint must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(src_pos) != 2):
+        throw "src_pos must be a tuple of 2 integers (x, y)." from "ValueError"
+    end
+    if (len(src_size) != 2):
+        throw "src_size must be a tuple of 2 integers (width, height)." from "ValueError"
+    end
+    libload.call_fn(draw_texture_rec_c, [texture.get_id(), src_pos[0], src_pos[1], src_size[0], src_size[1], pos_x, pos_y, tint[0], tint[1], tint[2], tint[3]])
+    return null
+end
+
+public final fun draw_texture_pro(
+    texture: Texture,
+    src_rect: tuple[int, int, int, int],
+    dest_rect: tuple[int, int, int, int],
+    origin: tuple[float, float],
+    rotation: float,
+    tint: tuple[int; 4],
+) -> void:
+    /// Draws a part of the specified texture defined by a source rectangle into a destination rectangle with rotation, origin, and color tint.
+    ///     @param texture: Texture - The texture to draw.
+    ///     @param src_rect: tuple[int, int, int, int] - A tuple representing the source rectangle's (x, y, width, height).
+    ///     @param dest_rect: tuple[int, int, int, int] - A tuple representing the destination rectangle's (x, y, width, height).
+    ///     @param origin: tuple[float, float] - A tuple representing the rotation origin point (x, y).
+    ///     @param rotation: float - The rotation angle in degrees.
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_texture_pro_c == null):
+        throw "Function 'DrawTexturePro' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(tint) != 4):
+        throw "Tint must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(src_rect) != 4):
+        throw "src_rect must be a tuple of 4 integers (x, y, width, height)." from "ValueError"
+    end
+    if (len(dest_rect) != 4):
+        throw "dest_rect must be a tuple of 4 integers (x, y, width, height)." from "ValueError"
+    end
+    if (len(origin) != 2):
+        throw "origin must be a tuple of 2 floats (x, y)." from "ValueError"
+    end
+    libload.call_fn(draw_texture_pro_c, [
+        texture.get_id(),
+        src_rect[0], src_rect[1], src_rect[2], src_rect[3],
+        dest_rect[0], dest_rect[1], dest_rect[2], dest_rect[3],
+        origin[0], origin[1],
+        rotation,
+        tint[0], tint[1], tint[2], tint[3],
+    ])
+    return null
+end
+
+public final fun get_texture_width(texture_id: int) -> int:
+    /// Returns the width of the specified texture.
+    ///     @param texture_id: int - The ID of the texture.
+    ///     @return: int - The width of the texture in pixels.
+    if (get_texture_width_c == null):
+        throw "Function 'GetTextureWidth' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(get_texture_width_c, [texture_id])
+    return result
+end
+
+public final fun get_texture_height(texture_id: int) -> int:
+    /// Returns the height of the specified texture.
+    ///     @param texture_id: int - The ID of the texture.
+    ///     @return: int - The height of the texture in pixels.
+    if (get_texture_height_c == null):
+        throw "Function 'GetTextureHeight' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: int = libload.call_fn(get_texture_height_c, [texture_id])
+    return result
+end
+
+public final fun get_texture_path(texture: Texture) -> str:
+    /// Returns the file path of the specified texture.
+    ///     @param texture: Texture - The texture to get the path for.
+    ///     @return: str - The file path of the texture.
+    if (get_texture_path_c == null):
+        throw "Function 'GetTexturePath' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: str = libload.parse_str_ptr(libload.call_fn(get_texture_path_c, [texture.get_id()]))
+    if result.is_empty():
+        throw f"Failed to get path for texture ID: {texture.get_id()}" from "TexturePathError"
+    end
+    return result
+end
+
+public final LoadTexture: function = load_texture
+public final UnloadTexture: function = unload_texture
+public final IsTextureValid: function = is_texture_valid
+public final DrawTexture: function = draw_texture
+public final DrawTextureEx: function = draw_texture_ex
+public final DrawTextureRec: function = draw_texture_rec
+public final DrawTexturePro: function = draw_texture_pro
+public final GetTextureWidth: function = get_texture_width
+public final GetTextureHeight: function = get_texture_height
+public final GetTexturePath: function = get_texture_path

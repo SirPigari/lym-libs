@@ -1,0 +1,389 @@
+private final begin_drawing_c: &int = libload.get_fn(lib, "BeginDrawing", [], "void")
+private final clear_background_c: &int = libload.get_fn(lib, "ClearBackground", ["ptr"], "void")
+private final end_drawing_c: &int = libload.get_fn(lib, "EndDrawing", [], "void")
+private final draw_rectangle_c: &int = libload.get_fn(lib, "DrawRectangle", ["int", "int", "int", "int", "ptr"], "void")
+private final draw_rectangle_lines_c: &int = libload.get_fn(lib, "DrawRectangleLines", ["int", "int", "int", "int", "ptr"], "void")
+private final draw_pixel_c: &int = libload.get_fn(lib, "DrawPixel", ["int", "int", "ptr"], "void")
+private final draw_line_c: &int = libload.get_fn(lib, "DrawLine", ["int", "int", "int", "int", "ptr"], "void")
+private final draw_circle_c: &int = libload.get_fn(lib, "DrawCircle", ["int", "int", "float32", "ptr"], "void")
+private final draw_circle_lines_c: &int = libload.get_fn(lib, "DrawCircleLines", ["int", "int", "float32", "ptr"], "void")
+
+private final draw_triangle_c: &int = libload.get_fn(lib_bind, "bind_DrawTriangle", ["str", "byte", "byte", "byte", "byte"], "void")
+private final draw_triangle_lines_c: &int = libload.get_fn(lib_bind, "bind_DrawTriangleLines", ["str", "byte", "byte", "byte", "byte"], "void")
+private final draw_poly_c: &int = libload.get_fn(lib_bind, "bind_DrawPoly", ["str", "int", "float32", "float32", "byte", "byte", "byte", "byte"], "void")
+private final draw_poly_lines_c: &int = libload.get_fn(lib_bind, "bind_DrawPolyLines", ["str", "int", "float32", "float32", "byte", "byte", "byte", "byte"], "void")
+
+public final fun begin_drawing() -> void:
+    /// Begins drawing to the window.
+    ///     @return: void - No return value.
+    if (begin_drawing_c == null):
+        throw "Function 'begin_drawing' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(begin_drawing_c, [])
+    return null
+end
+
+public final fun end_drawing() -> void:
+    /// Ends drawing to the window.
+    ///     @return: void - No return value.
+    if (end_drawing_c == null):
+        throw "Function 'end_drawing' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(end_drawing_c, [])
+    return null
+end
+
+public final fun clear_background(color: tuple[int; 4]) -> void:
+    /// Clears the background with the specified color.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (clear_background_c == null):
+        throw "Function 'clear_background' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"])
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(clear_background_c, [_color])
+    return null
+end
+
+public final fun draw_rectangle(
+    pos_x: int,
+    pos_y: int,
+    width: int,
+    height: int,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a rectangle on the screen at the specified position, size, and color.
+    ///     @param pos_x: int - The x position to draw the rectangle.
+    ///     @param pos_y: int - The y position to draw the rectangle.
+    ///     @param width: int - The width of the rectangle.
+    ///     @param height: int - The height of the rectangle.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_rectangle_c == null):
+        throw "Function 'draw_rectangle' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"])
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(draw_rectangle_c, [pos_x, pos_y, width, height, _color])
+    return null
+end
+
+public final fun draw_rectangle_lines(
+    pos_x: int,
+    pos_y: int,
+    width: int,
+    height: int,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws the outline of a rectangle on the screen at the specified position, size, and color.
+    ///     @param pos_x: int - The x position to draw the rectangle outline.
+    ///     @param pos_y: int - The y position to draw the rectangle outline.
+    ///     @param width: int - The width of the rectangle outline.
+    ///     @param height: int - The height of the rectangle outline.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_rectangle_lines_c == null):
+        throw "Function 'draw_rectangle_lines' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"])
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(draw_rectangle_lines_c, [pos_x, pos_y, width, height, _color])
+    return null
+end
+
+public final fun draw_pixel(
+    pos_x: int,
+    pos_y: int,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a pixel on the screen at the specified position and color.
+    ///     @param pos_x: int - The x position to draw the pixel.
+    ///     @param pos_y: int - The y position to draw the pixel.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_pixel_c == null):
+        throw "Function 'draw_pixel' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"])
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(draw_pixel_c, [pos_x, pos_y, _color])
+    return null
+end
+
+public final fun draw_line(
+    start_x: int,
+    start_y: int,
+    end_x: int,
+    end_y: int,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a line on the screen from the start position to the end position with the specified color.
+    ///     @param start_x: int - The x position of the start of the line.
+    ///     @param start_y: int - The y position of the start of the line.
+    ///     @param end_x: int - The x position of the end of the line.
+    ///     @param end_y: int - The y position of the end of the line.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_line_c == null):
+        throw "Function 'draw_line' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"])
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(draw_line_c, [start_x, start_y, end_x, end_y, _color])
+    return null
+end
+
+public final fun draw_circle(
+    center_x: int,
+    center_y: int,
+    radius: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a filled circle on the screen at the specified position, radius, and color.
+    ///     @param center_x: int - The x position of the center of the circle.
+    ///     @param center_y: int - The y position of the center of the circle.
+    ///     @param radius: int | float - The radius of the circle.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_circle_c == null):
+        throw "Function 'draw_circle' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"])
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(draw_circle_c, [center_x, center_y, radius as float, _color])
+    return null
+end
+
+public final fun draw_circle_lines(
+    center_x: int,
+    center_y: int,
+    radius: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws the outline of a circle on the screen at the specified position, radius, and color.
+    ///     @param center_x: int - The x position of the center of the circle.
+    ///     @param center_y: int - The y position of the center of the circle.
+    ///     @param radius: int | float - The radius of the circle.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_circle_lines_c == null):
+        throw "Function 'draw_circle_lines' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"], is_ptr=true)
+    if (_color == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    libload.call_fn(draw_circle_lines_c, [center_x, center_y, radius as float, _color])
+    return null
+end
+
+public final fun draw_triangle(
+    v1: tuple[int | float, int | float],
+    v2: tuple[int | float, int | float],
+    v3: tuple[int | float, int | float],
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a filled triangle on the screen defined by three points and a color.
+    ///     @param v1: tuple[int | float, int | float] - The first vertex of the triangle.
+    ///     @param v2: tuple[int | float, int | float] - The second vertex of the triangle.
+    ///     @param v3: tuple[int | float, int | float] - The third vertex of the triangle.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    ///
+    ///     @note: vertex in counter-clockwise order!
+    if (draw_triangle_c == null):
+        throw "Function 'draw_triangle' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+
+    triangle_str := libload.create_str_ptr(f"{v1[0] as float}|{v1[1] as float}|{v2[0] as float}|{v2[1] as float}|{v3[0] as float}|{v3[1] as float}")
+    libload.call_fn(draw_triangle_c, [triangle_str, color[0], color[1], color[2], color[3]])
+    return null
+end
+
+public final fun draw_triangle_lines(
+    v1: tuple[int | float, int | float],
+    v2: tuple[int | float, int | float],
+    v3: tuple[int | float, int | float],
+    color: tuple[int; 4],
+) -> void:
+    /// Draws the outline of a triangle on the screen defined by three points and a color.
+    ///     @param v1: tuple[int | float, int | float] - The first vertex of the triangle.
+    ///     @param v2: tuple[int | float, int | float] - The second vertex of the triangle.
+    ///     @param v3: tuple[int | float, int | float] - The third vertex of the triangle.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    ///
+    ///     @note: vertex in counter-clockwise order!
+    if (draw_triangle_lines_c == null):
+        throw "Function 'draw_triangle_lines' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+
+    triangle_str := libload.create_str_ptr(f"{v1[0] as float}|{v1[1] as float}|{v2[0] as float}|{v2[1] as float}|{v3[0] as float}|{v3[1] as float}")
+    libload.call_fn(draw_triangle_lines_c, [triangle_str, color[0], color[1], color[2], color[3]])
+    return null
+end
+
+public final fun draw_poly(
+    center: tuple[int | float, int | float],
+    sides: int,
+    radius: int | float,
+    rotation: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a filled regular polygon on the screen defined by its center, number of sides, radius, rotation, and color.
+    ///     @param center: Position2D - The center position of the polygon.
+    ///     @param sides: int - The number of sides of the polygon (minimum 3).
+    ///     @param radius: float - The radius of the polygon (distance from center to vertex).
+    ///     @param rotation: float - The rotation angle of the polygon in degrees.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_poly_c == null):
+        throw "Function 'draw_poly' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (sides < 3):
+        throw "Polygon must have at least 3 sides." from "ValueError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    center_str := libload.create_str_ptr(f"{center[0] as float}|{center[1] as float}")
+    libload.call_fn(draw_poly_c, [center_str, sides, radius as float, rotation as float, color[0], color[1], color[2], color[3]])
+    return null
+end
+
+public final fun draw_poly_lines(
+    center: tuple[int | float, int | float],
+    sides: int,
+    radius: int | float,
+    rotation: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws the outline of a regular polygon on the screen defined by its center, number of sides, radius, rotation, and color.
+    ///     @param center: tuple[int | float, int | float] - The center position of the polygon.
+    ///     @param sides: int - The number of sides of the polygon (minimum 3).
+    ///     @param radius: float - The radius of the polygon (distance from center to vertex).
+    ///     @param rotation: float - The rotation angle of the polygon in degrees.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_poly_lines_c == null):
+        throw "Function 'draw_poly_lines' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (sides < 3):
+        throw "Polygon must have at least 3 sides." from "ValueError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a list of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    center_str := libload.create_str_ptr(f"{center[0] as float}|{center[1] as float}")
+    libload.call_fn(draw_poly_lines_c, [center_str, sides, radius as float, rotation as float, color[0], color[1], color[2], color[3]])
+    return null
+end
+
+public final BeginDrawing: function = begin_drawing
+public final EndDrawing: function = end_drawing
+public final ClearBackground: function = clear_background
+public final DrawRectangle: function = draw_rectangle
+public final DrawRectangleLines: function = draw_rectangle_lines
+public final DrawPixel: function = draw_pixel
+public final DrawLine: function = draw_line
+public final DrawCircle: function = draw_circle
+public final DrawCircleLines: function = draw_circle_lines
+public final DrawTriangle: function = draw_triangle
+public final DrawTriangleLines: function = draw_triangle_lines
+public final DrawPoly: function = draw_poly
+public final DrawPolyLines: function = draw_poly_lines

@@ -1,0 +1,65 @@
+{
+    "ignore": [
+        "lib/*.a",
+        "lib/binding/"
+    ],
+    "supported_platforms": [
+        "windows",
+        "linux",
+        "macos"
+    ],
+    "platform_ignore": {
+        "windows": [
+            "lib/*.so",
+            "lib/*.dylib"
+        ],
+        "linux": [
+            "lib/*.dll",
+            "lib/*.dylib"
+        ],
+        "macos": [
+            "lib/*.dll",
+            "lib/*.so"
+        ]
+    },
+    "options": {
+        "overwrite_existing": false,
+        "update_fresh": false
+    },
+    "artifacts": [
+        {
+            "name": "build linux",
+            "runner": "linux",
+            "deps": [
+                "sudo apt-get update",
+                "sudo apt-get install -y gcc"
+            ],
+            "command": "gcc -shared -fPIC -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -ldl",
+            "exports": {
+                "lib/raylib_lucia.so": "lib/raylib_lucia.so"
+            }
+        },
+        {
+            "name": "build windows",
+            "runner": "windows",
+            "deps": [
+                "choco install mingw -y"
+            ],
+            "command": "gcc .\\lib\\binding\\raylib_lucia_bindings.c -o .\\lib\\raylib_lucia.dll -shared",
+            "exports": {
+                "lib/raylib_lucia.dll": "lib/raylib_lucia.dll"
+            }
+        },
+        {
+            "name": "build macos",
+            "runner": "macos",
+            "deps": [
+                "brew install gcc"
+            ],
+            "command": "gcc -shared -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -lm",
+            "exports": {
+                "lib/raylib_lucia.dylib": "lib/raylib_lucia.dylib"
+            }
+        }
+    ]
+}
