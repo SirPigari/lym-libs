@@ -34,7 +34,7 @@
                 "sudo apt-get update",
                 "sudo apt-get install -y gcc"
             ],
-            "command": "gcc -shared -fPIC -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -ldl",
+            "command": "gcc -shared -fPIC -o lib/raylib_lucia.so lib/binding/raylib_lucia_bindings.c -ldl -O3",
             "exports": {
                 "lib/raylib_lucia.so": "lib/raylib_lucia.so"
             }
@@ -45,7 +45,7 @@
             "deps": [
                 "choco install mingw -y"
             ],
-            "command": "gcc .\\lib\\binding\\raylib_lucia_bindings.c -o .\\lib\\raylib_lucia.dll -shared",
+            "command": "gcc .\\lib\\binding\\raylib_lucia_bindings.c -o .\\lib\\raylib_lucia.dll -shared -O3",
             "exports": {
                 "lib/raylib_lucia.dll": "lib/raylib_lucia.dll"
             }
@@ -56,7 +56,7 @@
             "deps": [
                 "brew install gcc"
             ],
-            "command": "gcc -shared -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -lm",
+            "command": "gcc -shared -o lib/raylib_lucia.dylib lib/binding/raylib_lucia_bindings.c -lm -O3",
             "exports": {
                 "lib/raylib_lucia.dylib": "lib/raylib_lucia.dylib"
             }
