@@ -38,6 +38,7 @@ RLAPI void bind_SetWindowIcon(const char *path) {
     SetWindowIcon(img);
     UnloadImage(img);
 }
+
 // void SetWindowIcons(Image *images, int count);
 RLAPI void bind_SetWindowIcons(const char *paths, int count) {
     Image *images = (Image *)malloc(count * sizeof(Image));
@@ -106,6 +107,7 @@ RLAPI void bind_DrawTriangle(const char *vertices_str, int r, unsigned char g, u
     Color color = { (unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a };
     DrawTriangle(v1, v2, v3, color);
 }
+
 // RLAPI void DrawTriangleLines(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
 RLAPI void bind_DrawTriangleLines(const char *vertices_str, int r, unsigned char g, unsigned char b, unsigned char a) {
     float verts[6] = {0};
@@ -157,6 +159,7 @@ RLAPI void bind_DrawPoly(const char *center_str, int sides, float radius, float 
     Color color = { (unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a };
     DrawPoly(center, sides, radius, rotation, color);
 }
+
 // RLAPI void DrawPolyLines(Vector2 center, int sides, float radius, float rotation, Color color);
 RLAPI void bind_DrawPolyLines(const char *center_str, int sides, float radius, float rotation, int r, unsigned char g, unsigned char b, unsigned char a) {
     float coords[2] = {0};
