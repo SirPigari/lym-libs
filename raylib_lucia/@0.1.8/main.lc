@@ -32,7 +32,7 @@ match (os.os_name()):
         if (!fs.file_exists(__dir__ + "lib/raylib_lucia.so")):
             throw f"raylib_lucia.so not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
         end
-        lib = libload.load_lib(__dir__ + "lib/raylib.so")
+        lib = libload.load_lib(__dir__ + "lib/raylib.so", flags=libload.RTLD_LAZY | libload.RTLD_GLOBAL)
         lib_bind = libload.load_lib(__dir__ + "lib/raylib_lucia.so")
     end
     "Darwin":
@@ -42,7 +42,7 @@ match (os.os_name()):
         if (!fs.file_exists(__dir__ + "lib/raylib_lucia.dylib")):
             throw f"raylib_lucia.dylib not found in {__dir__ + 'lib/'}." from "FileNotFoundError"
         end
-        lib = libload.load_lib(__dir__ + "lib/raylib.dylib")
+        lib = libload.load_lib(__dir__ + "lib/raylib.dylib", flags=libload.RTLD_LAZY | libload.RTLD_GLOBAL)
         lib_bind = libload.load_lib(__dir__ + "lib/raylib_lucia.dylib")
     end
     _ ->

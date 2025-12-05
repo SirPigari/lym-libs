@@ -36,7 +36,7 @@ static void* load_library(const char* name) {
     handle = LoadLibraryA(name);
     return (void*)handle;
 #else
-    void* handle = dlopen(name, RTLD_LAZY | RTLD_NOLOAD);
+    void* handle = dlopen(name, RTLD_LAZY | RTLD_GLOBAL | RTLD_NOLOAD);
     if (handle) return handle;
     handle = dlopen(name, RTLD_LAZY);
     return handle;
