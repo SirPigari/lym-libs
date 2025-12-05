@@ -20,7 +20,7 @@ static void free_id_img(int id) {
     textures_used[id] = false;
 }
 
-RLAPI const char* bind_LoadTexture(const char *fileName) {
+RLAPI const char* bind_LoadTexture(const char* fileName) {
     for (int i = 0; i < MAX_TEXTURES; i++) {
         if (textures_used[i] && strcmp(texture_paths[i], fileName) == 0) {
             snprintf(retbuf, sizeof(retbuf), "ID: %d", i);
@@ -29,15 +29,53 @@ RLAPI const char* bind_LoadTexture(const char *fileName) {
     }
 
     int idx = alloc_id_img(MAX_TEXTURES);
-    if (idx == -1) { 
+    if (idx == -1) {
         snprintf(retbuf, sizeof(retbuf), "ERR: No free texture slots, max textures: %d", MAX_TEXTURES);
         return retbuf;
     }
 
-    Texture2D t = LoadTexture(fileName);
-    textures[idx] = t;
-    if (!IsTextureValid(textures[idx])) return "ERR: Failed to load texture";
+    Texture2D t;
 
+#if defined(_WIN32)
+    int wlen = MultiByteToWideChar(CP_UTF8, 0, fileName, -1, NULL, 0);
+    if (wlen == 0) return "ERR: UTF-8 conversion failed";
+
+    wchar_t* wfilename = (wchar_t*)malloc(wlen * sizeof(wchar_t));
+    MultiByteToWideChar(CP_UTF8, 0, fileName, -1, wfilename, wlen);
+
+    FILE* f = _wfopen(wfilename, L"rb");
+    free(wfilename);
+    if (!f) return "ERR: Failed to open file";
+
+    fseek(f, 0, SEEK_END);
+    long fsize = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    unsigned char* buffer = (unsigned char*)malloc(fsize);
+    fread(buffer, 1, fsize, f);
+    fclose(f);
+
+    const char* ext = strrchr(fileName, '.');
+    const char* slash1 = strrchr(fileName, '/');
+    const char* slash2 = strrchr(fileName, '\\');
+    const char* last_slash = (slash1 > slash2) ? slash1 : slash2;
+    if (!ext || (last_slash && ext < last_slash)) ext = ".png";
+
+    Image img = LoadImageFromMemory(ext, buffer, fsize);
+    free(buffer);
+
+    if (img.data == NULL) return "ERR: Failed to load image";
+
+    t = LoadTextureFromImage(img);
+    UnloadImage(img);
+
+#else
+    t = LoadTexture(fileName);
+#endif
+
+    if (!IsTextureValid(t)) return "ERR: Failed to load texture";
+
+    textures[idx] = t;
     strncpy(texture_paths[idx], fileName, MAX_PATH_LENGTH - 1);
     texture_paths[idx][MAX_PATH_LENGTH - 1] = 0;
 
@@ -117,4 +155,43 @@ RLAPI int bind_GetTextureHeight(int id) {
 RLAPI const char* bind_GetTexturePath(int id) {
     if (id < 0 || id >= MAX_TEXTURES || !textures_used[id]) return "";
     return texture_paths[id];
+}
+
+RLAPI const char* bind_DrawImage(const char* fileName,
+                                 int posX, int posY,
+                                 int width, int height,
+                                 float rotation,
+                                 float origin_x, float origin_y,
+                                 int r, int g, int b, int a) {
+    const char* tex = bind_LoadTexture(fileName);
+    if (strncmp(tex, "ERR:", 4) == 0)
+        return tex;
+
+    
+    int id = atoi(tex + 4);
+    Texture2D t = textures[id];
+    
+    if (width == 0)  width  = t.width;
+    if (height == 0) height = t.height;
+
+    float ox = (width  * 0.5f) + origin_x;
+    float oy = (height * 0.5f) + origin_y;
+
+    Color tint = (Color){
+        (unsigned char)r,
+        (unsigned char)g,
+        (unsigned char)b,
+        (unsigned char)a
+    };
+
+    DrawTexturePro(
+        t,
+        (Rectangle){ 0, 0, (float)t.width, (float)t.height },
+        (Rectangle){ (float)posX, (float)posY, (float)width, (float)height },
+        (Vector2){ ox, oy },
+        rotation,
+        tint
+    );
+
+    return "";
 }

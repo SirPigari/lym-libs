@@ -12,12 +12,16 @@ private final get_texture_width_c: &int = libload.get_fn(lib_bind, "bind_GetText
 private final get_texture_height_c: &int = libload.get_fn(lib_bind, "bind_GetTextureHeight", ["int"], "int")
 private final get_texture_path_c: &int = libload.get_fn(lib_bind, "bind_GetTexturePath", ["int"], "str")
 
+private final draw_image_c: &int = libload.get_fn(lib_bind, "bind_DrawImage", ["str", "int", "int", "int", "int", "float", "float", "float", "int", "int", "int", "int"], "str")
+
 public final typedef struct Texture {
     private id: int,
     private path: ?str,
     width: int,
     height: int,
 }
+
+public final typedef Texture2D = Texture // Alias for Texture
 
 for Texture:
     public final fun get_id(self) -> int:
@@ -269,8 +273,45 @@ public final fun get_texture_path(texture: Texture) -> str:
     return result
 end
 
+public final fun draw_image(path: str, pos_x: int, pos_y: int, width: int = 0, height: int = 0, rotation: float = 0.0, origin: tuple[float, float] = (0.0, 0.0), tint: tuple[int; 4] = (255, 255, 255, 255)) -> void:
+    /// Draws an image from the specified file path at the given position with size, rotation, origin, and color tint.
+    ///     @param path: str - The file path to the image.
+    ///     @param pos_x: int - The x position to draw the image.
+    ///     @param pos_y: int - The y position to draw the image.
+    ///     @param width: int - The width to draw the image.
+    ///     @param height: int - The height to draw the image.
+    ///     @param rotation: float - The rotation angle in degrees.
+    ///     @param origin: tuple[float, float] - A tuple representing the rotation origin point (x, y).
+    ///     @param tint: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_image_c == null):
+        throw "Function 'DrawImage' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(tint) != 4):
+        throw "Tint must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in tint):
+        if (c < 0 || c > 255):
+            throw "Tint values must be in the range 0-255." from "ValueError"
+        end
+    end
+    if (len(origin) != 2):
+        throw "origin must be a tuple of 2 floats (x, y)." from "ValueError"
+    end
+    _path: &int = libload.create_str_ptr(path)
+    if (_path == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    ret_str: str = libload.parse_str_ptr(libload.call_fn(draw_image_c, [_path, pos_x, pos_y, width, height, rotation, origin[0], origin[1], tint[0], tint[1], tint[2], tint[3]]))
+    if ret_str.startswith("ERR: "):
+        throw f"Failed to draw image from path: {path}. Error: {ret_str[5..]}" from "ImageDrawError"
+    end
+    return null
+end
+
 public final LoadTexture: function = load_texture
 public final UnloadTexture: function = unload_texture
+public final UnloadAllTextures: function = unload_all_textures
 public final IsTextureValid: function = is_texture_valid
 public final DrawTexture: function = draw_texture
 public final DrawTextureEx: function = draw_texture_ex
@@ -279,3 +320,4 @@ public final DrawTexturePro: function = draw_texture_pro
 public final GetTextureWidth: function = get_texture_width
 public final GetTextureHeight: function = get_texture_height
 public final GetTexturePath: function = get_texture_path
+public final DrawImage: function = draw_image

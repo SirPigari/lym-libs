@@ -71,6 +71,8 @@ static Vector2 (*fp_GetGestureDragVector)(void) = NULL;
 
 static Image (*fp_LoadImage)(const char*) = NULL;
 static void (*fp_UnloadImage)(Image) = NULL;
+static Image (*fp_LoadImageFromMemory)(const char*, const unsigned char*, int) = NULL;
+static Texture2D (*fp_LoadTextureFromImage)(Image) = NULL;
 
 static Texture2D (*fp_LoadTexture)(const char*) = NULL;
 static void (*fp_UnloadTexture)(Texture2D) = NULL;
@@ -180,6 +182,8 @@ static void load_raylib() {
 
     fp_LoadImage = get_symbol(raylib_lib, "LoadImage");
     fp_UnloadImage = get_symbol(raylib_lib, "UnloadImage");
+    fp_LoadImageFromMemory = get_symbol(raylib_lib, "LoadImageFromMemory");
+    fp_LoadTextureFromImage = get_symbol(raylib_lib, "LoadTextureFromImage");
 
     fp_LoadTexture = get_symbol(raylib_lib, "LoadTexture");
     fp_UnloadTexture = get_symbol(raylib_lib, "UnloadTexture");
@@ -271,6 +275,8 @@ RLAPI Vector2 GetGestureDragVector(void) { load_raylib(); return fp_GetGestureDr
 
 RLAPI Image LoadImage(const char* fileName) { load_raylib(); return fp_LoadImage?fp_LoadImage(fileName): (Image){0}; }
 RLAPI void UnloadImage(Image image) { load_raylib(); if(fp_UnloadImage) fp_UnloadImage(image); }
+RLAPI Image LoadImageFromMemory(const char* fileType, const unsigned char* fileData, int dataSize) { load_raylib(); return fp_LoadImageFromMemory?fp_LoadImageFromMemory(fileType, fileData, dataSize): (Image){0}; }
+RLAPI Texture2D LoadTextureFromImage(Image image) { load_raylib(); return fp_LoadTextureFromImage?fp_LoadTextureFromImage(image): (Texture2D){0}; }
 
 RLAPI Texture2D LoadTexture(const char* fileName) { load_raylib(); return fp_LoadTexture?fp_LoadTexture(fileName): (Texture2D){0}; }
 RLAPI void UnloadTexture(Texture2D texture) { load_raylib(); if(fp_UnloadTexture) fp_UnloadTexture(texture); }
