@@ -56,20 +56,16 @@ private final get_playing_sounds_c: &int = libload.get_fn(lib, "get_playing_soun
 
 
 public final fun play_sound(path: str, duration_ms: float = 0.0, loop: bool = false, volume: Volume = 1.0, sync: bool = true) -> SoundId:
-    // Plays a sound file with the specified path, duration, loop option, volume, and sync mode.
-    //
-    // Parameters:
-    //     path (str): The path to the sound file.
-    //     duration_ms (?float): Duration in milliseconds to play (optional).
-    //     loop (bool): Whether to loop the sound.
-    //     volume (Volume): Playback volume (0.0 to 1.0).
-    //     sync (bool): If true, blocks until sound finishes. If false, returns immediately.
-    //
-    // NOTE: Only WAV format is currently supported.
-    // WARNING: If sync is false, you must manually wait (e.g. with time.sleep) until the sound finishes, otherwise playback may be cut off when your code ends.
-    //
-    // Returns:
-    //     SoundId: The struct containing sound info and id.
+    /// Plays a sound file with the specified path, duration, loop option, volume, and sync mode.
+    ///     @param path: str - The path to the sound file.
+    ///     @param duration_ms: ?float - Duration in milliseconds to play (optional).
+    ///     @param loop: bool - Whether to loop the sound.
+    ///     @param volume: Volume - Playback volume (0.0 to 1.0).
+    ///     @param sync: bool - If true, blocks until sound finishes. If false, returns immediately.
+    ///     @return: SoundId - The struct containing sound info and id.
+    ///
+    ///     @note: Only WAV format is currently supported.
+    ///     @warning: If sync is false, you must manually wait (e.g. with time.sleep) until the sound finishes, otherwise playback may be cut off when your code ends.
     if (play_sound_c == null):
         throw "Function 'play_sound' not found in the loaded library." from "FunctionNotFoundError"
     end
@@ -94,13 +90,9 @@ public final fun play_sound(path: str, duration_ms: float = 0.0, loop: bool = fa
 end
 
 public final fun stop_sound(sound: SoundId):
-    // Stops a playing sound with the specified SoundId.
-    //
-    // Parameters:
-    //     sound (SoundId): The sound to stop.
-    //
-    // Returns:
-    //     void
+    /// Stops a playing sound with the specified SoundId.
+    ///     @param sound: SoundId - The sound to stop.
+    ///     @return: void - No return value.
     if (stop_sound_c == null):
         throw "Function 'stop_sound' not found in the loaded library." from "FunctionNotFoundError"
     end
@@ -112,13 +104,8 @@ public final fun stop_sound(sound: SoundId):
 end
 
 public final fun get_playing_sounds() -> list[SoundId]:
-    // Returns a list of currently playing sounds.
-    //
-    // Parameters:
-    //     None
-    //
-    // Returns:
-    //     list[SoundId]: List of SoundId structs for all playing sounds.
+    /// Returns a list of currently playing sounds.
+    ///     @return: list[SoundId] - List of SoundId structs for all playing sounds.
     if (get_playing_sounds_c == null):
         throw "Function 'get_playing_sounds' not found in the loaded library." from "FunctionNotFoundError"
     end
@@ -126,12 +113,9 @@ public final fun get_playing_sounds() -> list[SoundId]:
 end
 
 public final fun test():
-    // Test function to demonstrate sound playback.
-    //
-    // Parameters:
-    //     None
-    //
-    // Returns:
-    //     void
+    /// Test function to demonstrate sound playback.
+    ///     @return: void - No return value.
     play_sound("miku.wav", sync = true)
 end
+
+test()
