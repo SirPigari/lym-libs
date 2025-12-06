@@ -118,4 +118,6 @@ public final fun test():
     play_sound("miku.wav", sync = true)
 end
 
-test()
+if SOUNDS_DEBUG:
+    test()
+end
