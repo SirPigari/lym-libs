@@ -1,14 +1,13 @@
 # Sounds - Lucia Library
 
-Cross-platform sound playback for Lucia, with support for WAV/MP3, volume, duration, looping, and sync/async modes.
+Cross-platform sound playback for Lucia, with support for WAV, volume, duration, looping, and sync/async modes.
 
 ## Features
-- Play sound files (WAV, MP3, FLAC, AAC, OGG, M4A)
+- Play sound files (only WAV is supported natively)
 - Specify playback duration (milliseconds)
 - Loop playback
 - Set playback volume (0.0 to 1.0)
 - Sync (blocking) or async (non-blocking) playback
-- Automatic conversion of non-WAV formats to WAV
 - Debug output for troubleshooting
 
 ## Get started
@@ -25,10 +24,10 @@ Then try running
 import sounds
 
 // Play a sound (blocking until finished)
-sound := sounds.play_sound("miku.mp3", loop=false, volume=1.0, sync=true)
+sound := sounds.play_sound("miku.wav", loop=false, volume=1.0, sync=true)
 
 // Play a sound asynchronously (returns immediately)
-sound := sounds.play_sound("miku.mp3", duration_ms=5000, loop=true, volume=0.5, sync=false)
+sound := sounds.play_sound("miku.wav", duration_ms=5000, loop=true, volume=0.5, sync=false)
 
 // Stop a sound
 sounds.stop_sound(sound)
