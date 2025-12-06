@@ -65,7 +65,7 @@ public final fun play_sound(path: str, duration_ms: float = 0.0, loop: bool = fa
     //     volume (Volume): Playback volume (0.0 to 1.0).
     //     sync (bool): If true, blocks until sound finishes. If false, returns immediately.
     //
-    // NOTE: The sound may be delayed slightly if you dont use wav format. The function will convert mp3, flac, aac, ogg, m4a files to wav internally. which slows down the process.
+    // NOTE: Only WAV format is currently supported.
     // WARNING: If sync is false, you must manually wait (e.g. with time.sleep) until the sound finishes, otherwise playback may be cut off when your code ends.
     //
     // Returns:
@@ -80,15 +80,7 @@ public final fun play_sound(path: str, duration_ms: float = 0.0, loop: bool = fa
         throw "Duration does not work with sync mode. Use async mode instead." from "ValueError"
     end
     play_path := path
-    if fs.extension(path) in ["mp3", "flac", "aac", "ogg", "m4a"]:
-        tmp_dir := "./tmp/"
-        if (!fs.dir_exists(tmp_dir)):
-            fs.make_dir(tmp_dir)
-        end
-        out_path := tmp_dir + "/" + fs.basename(path) + ".wav"
-        fs.convert_audio_file(path, out_path)
-        play_path := out_path
-    else if !fs.extension(path) in ["wav"]:
+    if !fs.extension(path) == "wav":
         throw f"Unsupported audio format: {fs.extension(path)}" from "UnsupportedFormatError"
     end
     path_cstr := libload.create_str_ptr(fs.fix_path(play_path))
@@ -133,21 +125,6 @@ public final fun get_playing_sounds() -> list[SoundId]:
     throw "get_playing_sounds not implemented yet" from "NotImplemented"
 end
 
-public final fun clear_temps():
-    // Clears temporary converted audio files.
-    // NOTE: Don't forget to call this function after you're done playing sounds to avoid cluttering up the tmp directory.
-    //
-    // Parameters:
-    //     None
-    //
-    // Returns:
-    //     void
-    tmp_dir := __dir__ + "/tmp/"
-    if (fs.dir_exists(tmp_dir)):
-        fs.remove_dir(tmp_dir)
-    end
-end
-
 public final fun test():
     // Test function to demonstrate sound playback.
     //
@@ -156,6 +133,5 @@ public final fun test():
     //
     // Returns:
     //     void
-    play_sound("miku.mp3", sync = true)
-    clear_temps()
+    play_sound("miku.wav", sync = true)
 end
