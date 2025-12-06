@@ -1,0 +1,25 @@
+{
+    "supported_platforms": [
+        "windows",
+        "linux",
+        "macos"
+    ],
+    "ignore": [
+        "miku.wav",
+        "sounds.c"
+    ],
+    "platform_ignore": {
+        "windows": [
+            "*.so",
+            "*.dylib"
+        ],
+        "linux": [
+            "*.dll",
+            "*.dylib"
+        ],
+        "macos": [
+            "*.dll",
+            "*.so"
+        ]
+    }
+}
