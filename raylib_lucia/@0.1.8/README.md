@@ -44,7 +44,7 @@ The `lym.json` file handles so you dont download the libraries from other platfo
 ### IDs
 
 Raylib-Lucia uses IDs to manage resources like sounds, music, audio streams and textures.  
-When you load or create a resource, you get back an integer ID that represents that resource.
+When you load or create a resource, you get back a struct as an ID that represents that resource.
 
 The IDs are stored in static arrays inside C code, and the library keeps track of which IDs are in use.  
 When you want to use a resource, you pass its ID to the relevant function.
@@ -76,38 +76,39 @@ Each function links to its definition in the `defs` folder, and every function i
 
 Audio device management and audio playing functions.  
 
- - [init_audio_device](./defs/audio.lc#L37)
- - [close_audio_device](./defs/audio.lc#L47)
- - [is_audio_device_ready](./defs/audio.lc#L57)
- - [set_master_volume](./defs/audio.lc#L66)
- - [get_master_volume](./defs/audio.lc#L81)
- - [play_wave](./defs/audio.lc#L91)
- - [play_sound](./defs/audio.lc#L157)
- - [stop_sound](./defs/audio.lc#L195)
- - [pause_sound](./defs/audio.lc#L231)
- - [resume_sound](./defs/audio.lc#L249)
- - [is_sound_playing](./defs/audio.lc#L267)
- - [unload_sound](./defs/audio.lc#L213)
- - [unload_all_sounds](./defs/audio.lc#L126)
- - [play_music_stream](./defs/audio.lc#L294)
- - [stop_music_stream](./defs/audio.lc#L328)
- - [unload_music_stream](./defs/audio.lc#L348)
- - [pause_music_stream](./defs/audio.lc#L368)
- - [resume_music_stream](./defs/audio.lc#L388)
- - [is_music_stream_playing](./defs/audio.lc#L408)
- - [unload_all_music](./defs/audio.lc#L136)
- - [play_audio_stream](./defs/audio.lc#L434)
- - [stop_audio_stream](./defs/audio.lc#L484)
- - [unload_audio_stream](./defs/audio.lc#L504)
- - [pause_audio_stream](./defs/audio.lc#L524)
- - [resume_audio_stream](./defs/audio.lc#L544)
- - [is_audio_stream_playing](./defs/audio.lc#L564)
- - [unload_all_audio_streams](./defs/audio.lc#L146)
+ - [init_audio_device](./defs/audio.lc#L38)
+ - [close_audio_device](./defs/audio.lc#L48)
+ - [is_audio_device_ready](./defs/audio.lc#L58)
+ - [set_master_volume](./defs/audio.lc#L67)
+ - [get_master_volume](./defs/audio.lc#L82)
+ - [play_wave](./defs/audio.lc#L92)
+ - [unload_all_waves](./defs/audio.lc#L127)
+ - [play_sound](./defs/audio.lc#L168)
+ - [stop_sound](./defs/audio.lc#L206)
+ - [unload_sound](./defs/audio.lc#L224)
+ - [pause_sound](./defs/audio.lc#L242)
+ - [resume_sound](./defs/audio.lc#L260)
+ - [is_sound_playing](./defs/audio.lc#L278)
+ - [unload_all_sounds](./defs/audio.lc#L137)
+ - [play_music_stream](./defs/audio.lc#L303)
+ - [stop_music_stream](./defs/audio.lc#L341)
+ - [unload_music_stream](./defs/audio.lc#L359)
+ - [pause_music_stream](./defs/audio.lc#L377)
+ - [resume_music_stream](./defs/audio.lc#L395)
+ - [is_music_stream_playing](./defs/audio.lc#L413)
+ - [unload_all_music](./defs/audio.lc#L147)
+ - [play_audio_stream](./defs/audio.lc#L438)
+ - [stop_audio_stream](./defs/audio.lc#L491)
+ - [unload_audio_stream](./defs/audio.lc#L509)
+ - [pause_audio_stream](./defs/audio.lc#L527)
+ - [resume_audio_stream](./defs/audio.lc#L545)
+ - [is_audio_stream_playing](./defs/audio.lc#L563)
+ - [unload_all_audio_streams](./defs/audio.lc#L157)
   
- - [MAX_WAVES](./defs/audio.lc#L31): int     = 256
- - [MAX_SOUNDS](./defs/audio.lc#L32): int    = 512
- - [MAX_MUSICS](./defs/audio.lc#L33): int    = 128
- - [MAX_STREAMS](./defs/audio.lc#L34): int   = 128
+ - [MAX_WAVES](./defs/audio.lc#L32): int     = 256
+ - [MAX_SOUNDS](./defs/audio.lc#L33): int    = 512
+ - [MAX_MUSICS](./defs/audio.lc#L34): int    = 128
+ - [MAX_STREAMS](./defs/audio.lc#L35): int   = 128
 
 **Example**
 
