@@ -14,6 +14,8 @@ private final get_texture_path_c: &int = libload.get_fn(lib_bind, "bind_GetTextu
 
 private final draw_image_c: &int = libload.get_fn(lib_bind, "bind_DrawImage", ["str", "int", "int", "int", "int", "float", "float", "float", "int", "int", "int", "int"], "str")
 
+public final MAX_TEXTURES: int = 1024
+
 public final typedef struct Texture {
     private id: int,
     private path: ?str,

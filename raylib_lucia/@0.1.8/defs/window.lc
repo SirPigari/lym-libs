@@ -43,6 +43,7 @@ private final set_window_icon_c: &int = libload.get_fn(lib_bind, "bind_SetWindow
 private final set_window_icons_c: &int = libload.get_fn(lib_bind, "bind_SetWindowIcons", ["str", "int"], "void")
 private final get_window_position_c: &int = libload.get_fn(lib_bind, "bind_GetWindowPosition", [], "str")
 private final get_window_scale_dpi_c: &int = libload.get_fn(lib_bind, "bind_GetWindowScaleDPI", [], "str")
+private final unload_all_resources_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllResources", [], "void")
 
 public final FLAG_VSYNC_HINT: int           = 0x00000040  // 1 << 6
 public final FLAG_FULLSCREEN_MODE: int      = 0x00000002  // 1 << 1
@@ -92,6 +93,17 @@ public final fun close_window() -> void:
         throw "Function 'close_window' not found in the loaded library." from "FunctionNotFoundError"
     end
     libload.call_fn(close_window_c, [])
+    unload_all_resources()
+    return null
+end
+
+public final fun unload_all_resources() -> void:
+    /// Unloads all loaded resources (textures, sounds, music, etc.).
+    ///     @return: void - No return value.
+    if (unload_all_resources_c == null):
+        throw "Function 'unload_all_resources' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_all_resources_c, [])
     return null
 end
 
@@ -573,6 +585,7 @@ private mutable _screen_height: &int = &get_screen_height()
 
 public final InitWindow: function = init_window
 public final CloseWindow: function = close_window
+public final UnloadAllResources: function = unload_all_resources
 public final WindowShouldClose: function = window_should_close
 public final IsWindowReady: function = is_window_ready
 public final IsWindowMinimized: function = is_window_minimized

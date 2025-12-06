@@ -329,3 +329,13 @@ RLAPI const char* bind_GetColor(unsigned int hexValue) {
     snprintf(retbuf, sizeof(retbuf), "%d|%d|%d|%d", result.r, result.g, result.b, result.a);
     return retbuf;
 }
+
+RLAPI void bind_UnloadAllResources() {
+    // Unload all audio
+    bind_UnloadAllWaves();
+    bind_UnloadAllSounds();
+    bind_UnloadAllMusic();
+    bind_UnloadAllAudioStreams();
+    // Unload all images/textures
+    bind_UnloadAllTextures();
+}

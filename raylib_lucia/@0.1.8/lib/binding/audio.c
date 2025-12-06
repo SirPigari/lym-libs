@@ -186,6 +186,15 @@ RLAPI const char* bind_IsAudioStreamPlaying(int id) {
 }
 
 // full cleanup
+RLAPI void bind_UnloadAllWaves() {
+    for (int i = 0; i < MAX_WAVES; i++) {
+        if (waves_used[i]) {
+            UnloadWave(waves[i]);
+            waves_used[i] = false;
+        }
+    }
+}
+
 RLAPI void bind_UnloadAllSounds() {
     for (int i = 0; i < MAX_SOUNDS; i++) {
         if (sounds_used[i]) {

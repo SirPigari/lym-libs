@@ -24,6 +24,7 @@ private final unload_audio_stream_c: &int = libload.get_fn(lib_bind, "bind_Unloa
 private final pause_audio_stream_c: &int = libload.get_fn(lib_bind, "bind_PauseAudioStream", ["int"], "str")
 private final resume_audio_stream_c: &int = libload.get_fn(lib_bind, "bind_ResumeAudioStream", ["int"], "str")
 private final is_audio_stream_playing_c: &int = libload.get_fn(lib_bind, "bind_IsAudioStreamPlaying", ["int"], "str")
+private final unload_all_waves_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllWaves", [], "void")
 private final unload_all_sounds_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllSounds", [], "void")
 private final unload_all_music_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllMusic", [], "void")
 private final unload_all_audio_streams_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllAudioStreams", [], "void")
@@ -120,6 +121,16 @@ public final fun play_wave(
     if result.startswith("ERR: "):
         throw result[5..] from "AudioError"
     end
+    return null
+end
+
+public final fun unload_all_waves() -> void:
+    /// Unloads all loaded waves, freeing associated resources.
+    ///     @return: void - No return value.
+    if (unload_all_waves_c == null):
+        throw "Function 'unload_all_waves' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_all_waves_c, [])
     return null
 end
 
@@ -603,6 +614,7 @@ public final PauseAudioStream: function = pause_audio_stream
 public final ResumeAudioStream: function = resume_audio_stream
 public final IsAudioStreamPlaying: function = is_audio_stream_playing
 
+public final UnloadAllWaves: function = unload_all_waves
 public final UnloadAllSounds: function = unload_all_sounds
 public final UnloadAllMusic: function = unload_all_music
 public final UnloadAllAudioStreams: function = unload_all_audio_streams

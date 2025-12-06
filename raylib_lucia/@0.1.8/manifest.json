@@ -3,6 +3,7 @@
     "version": "0.1.8",
     "required_lucia_version": "^2.0.0",
     "description": "Raylib bindings for Lucia.",
+    "license": "MIT, https://www.raylib.com/license.html",
     "authors": [
         "Markofwitch"
     ],
