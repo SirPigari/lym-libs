@@ -92,8 +92,8 @@ public final fun close_window() -> void:
     if (close_window_c == null):
         throw "Function 'close_window' not found in the loaded library." from "FunctionNotFoundError"
     end
-    libload.call_fn(close_window_c, [])
     unload_all_resources()
+    libload.call_fn(close_window_c, [])
     return null
 end
 
