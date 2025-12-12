@@ -193,7 +193,8 @@ scope (*):
         if (pan < -1.0 || pan > 1.0):
             throw "Pan must be in the range -1.0 to 1.0." from "ValueError"
         end
-        result: str = libload.parse_str_ptr(libload.call_fn(play_sound_c, [file_name, volume, pitch, pan])) as str
+        _file_name := libload.create_str_ptr(file_name)
+        result: str = libload.parse_str_ptr(libload.call_fn(play_sound_c, [_file_name, volume, pitch, pan])) as str
         if result.startswith("ERR: "):
             throw result[5..] from "AudioError"
         end
