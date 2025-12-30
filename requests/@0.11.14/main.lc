@@ -1,0 +1,140 @@
+// This module provides HTTP request functionality.
+// It includes functions to make GET and POST requests, handle headers, and manage request parameters.
+// Lucia version 2.0.0, module: requests@0.11.14
+import (str_to_json) from collections
+
+public static final fun get(
+    url: str,
+    params: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_params: map = if (!params): {} else: params end
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="GET", params=effective_params, headers=effective_headers)
+end
+
+public static final fun to_json(
+    response: any,
+) -> any:
+    if (response == null):
+        throw "Response is null, cannot convert to JSON." from "ValueError"
+    end
+
+    return str_to_json(response["body"])
+end
+
+public static final fun post(
+    url: str,
+    data: any = null,
+    json_: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="POST", data=data, json_=json_, headers=effective_headers)
+end
+
+public static final fun put(
+    url: str,
+    data: any = null,
+    json_: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="PUT", data=data, json_=json_, headers=effective_headers)
+end
+
+public static final fun demutablee(
+    url: str,
+    data: any = null,
+    json_: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="DELETE", data=data, json_=json_, headers=effective_headers)
+end
+
+public static final fun patch(
+    url: str,
+    data: any = null,
+    json_: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="PATCH", data=data, json_=json_, headers=effective_headers)
+end
+
+public static final fun head(
+    url: str,
+    params: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_params: map = if (!params): {} else: params end
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="HEAD", params=effective_params, headers=effective_headers)
+end
+
+public static final fun options(
+    url: str,
+    params: any = null,
+    headers: map = null,
+) -> any:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_params: map = if (!params): {} else: params end
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    return fetch(url, method="OPTIONS", params=effective_params, headers=effective_headers)
+end
+
+public static final fun ping(
+    url: str,
+    headers: map = null,
+) -> bool:
+    if (!#config.allow_fetch):
+        throw "Fetching is not allowed in this environment." from "PermissionError"
+    end
+
+    mutable effective_headers: map = if (!headers): {} else: headers end
+
+    try:
+        _response = fetch(url, method="GET", headers=effective_headers)
+        if ((_response != null) && (_response["status"] == 200)):
+            return true
+        end
+        return false
+    catch (e):
+        return false
+    end
+end
