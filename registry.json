@@ -28,6 +28,16 @@
         "raylib"
       ]
     },
+    "requests": {
+      "authors": [
+        "Markofwitch"
+      ],
+      "description": "This module provides HTTP request functionality.",
+      "latest_version": "0.11.14",
+      "names": [
+        "requests"
+      ]
+    },
     "sounds": {
       "authors": [
         "Markofwitch"
