@@ -161,7 +161,6 @@ public final fun draw_text(
         throw "Invalid pointer: null" from "PointerError"
     end
     _color := libload.create_struct([color[0], color[1], color[2], color[3]], ["byte", "byte", "byte", "byte"], packed=true)
-    print(_color.to_string())
     if (_color == null):
         throw "Invalid pointer: null" from "PointerError"
     end
