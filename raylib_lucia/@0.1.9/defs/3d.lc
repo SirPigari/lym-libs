@@ -1,0 +1,417 @@
+private final create_camera_c: &int = libload.get_fn(lib_bind, "bind_CreateCamera", ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "int")
+private final set_camera_parameters_c: &int = libload.get_fn(lib_bind, "bind_SetCameraParameters", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "void")
+private final set_camera_projection_c: &int = libload.get_fn(lib_bind, "bind_SetCameraProjection", ["int", "int"], "void")
+private final is_camera_valid_c: &int = libload.get_fn(lib_bind, "bind_IsCameraValid", ["int"], "bool")
+
+private final begin_mode_3d_c: &int = libload.get_fn(lib_bind, "bind_BeginMode3D", ["int"], "void")
+private final end_mode_3d_c: &int = libload.get_fn(lib, "EndMode3D", [], "void")
+
+private final load_model_c: &int = libload.get_fn(lib_bind, "bind_LoadModel", ["str"], "int")
+private final is_model_valid_c: &int = libload.get_fn(lib_bind, "bind_IsModelValid", ["int"], "bool")
+private final unload_model_c: &int = libload.get_fn(lib_bind, "bind_UnloadModel", ["int"], "void")
+private final unload_all_models_c: &int = libload.get_fn(lib_bind, "bind_UnloadAllModels", [], "void")
+
+private final draw_model_c: &int = libload.get_fn(lib_bind, "bind_DrawModel", ["int", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+private final draw_model_ex_c: &int = libload.get_fn(lib_bind, "bind_DrawModelEx", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+private final draw_model_wires_c: &int = libload.get_fn(lib_bind, "bind_DrawModelWires", ["int", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+private final draw_model_wires_ex_c: &int = libload.get_fn(lib_bind, "bind_DrawModelWiresEx", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+private final draw_model_points_c: &int = libload.get_fn(lib_bind, "bind_DrawModelPoints", ["int", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+private final draw_model_points_ex_c: &int = libload.get_fn(lib_bind, "bind_DrawModelPointsEx", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+
+public final CAMERA_PERSPECTIVE: int = 0
+public final CAMERA_ORTHOGRAPHIC: int = 1
+
+public final typedef struct Camera3D {
+    private id: int
+}
+
+for Camera3D:
+    public static final fun new(position: tuple[int | float; 3], target: tuple[int | float; 3], up: tuple[int | float; 3], fovy: int | float) -> Camera3D:
+        /// Creates a new Camera instance with the specified parameters.
+        ///     @param position: tuple[int | float; 3] - The position of the camera in 3D space.
+        ///     @param target: tuple[int | float; 3] - The target point the camera is looking at.
+        ///     @param up: tuple[int | float; 3] - The up vector of the camera.
+        ///     @param fovy: int | float - The field of view in the Y direction (in degrees).
+        ///     @return: Camera - A new Camera instance.
+        if (create_camera_c == null):
+            throw "Function 'bind_CreateCamera' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        result_id: int = libload.call_fn(create_camera_c, [
+            position[0] as float, position[1] as float, position[2] as float,
+            target[0] as float, target[1] as float, target[2] as float,
+            up[0] as float, up[1] as float, up[2] as float,
+            fovy as float
+        ]) as int
+        return Camera3D { id = result_id }
+    end
+
+    public final fun set_projection(self, projection: int) -> void:
+        /// Sets the projection type of the camera.
+        ///     @param projection: int - The projection type (CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC).
+        ///     @return: void - No return value.
+        if (set_camera_projection_c == null):
+            throw "Function 'bind_SetCameraProjection' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(set_camera_projection_c, [
+            self.id,
+            projection
+        ])
+        return null
+    end
+
+    public final fun set_parameters(
+        self,
+        position: tuple[int | float; 3],
+        target: tuple[int | float; 3],
+        up: tuple[int | float; 3],
+        fovy: int | float,
+    ) -> void:
+        /// Sets the parameters of the camera.
+        ///     @param position: tuple[int | float; 3] - The position of the camera in 3D space.
+        ///     @param target: tuple[int | float; 3] - The target point the camera is looking at.
+        ///     @param up: tuple[int | float; 3] - The up vector of the camera.
+        ///     @param fovy: int | float - The field of view in the Y direction (in degrees).
+        ///     @param projection: int - The projection type (CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC).
+        ///     @return: void - No return value.
+        if (set_camera_parameters_c == null):
+            throw "Function 'bind_SetCameraParameters' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(set_camera_parameters_c, [
+            self.id,
+            position[0] as float, position[1] as float, position[2] as float,
+            target[0] as float, target[1] as float, target[2] as float,
+            up[0] as float, up[1] as float, up[2] as float,
+            fovy as float
+        ])
+        return null
+    end
+
+    public final fun is_valid(self) -> bool:
+        /// Checks if the camera is valid.
+        ///     @return: bool - True if the camera is valid, false otherwise.
+        if (is_camera_valid_c == null):
+            throw "Function 'bind_IsCameraValid' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        result: bool = libload.call_fn(is_camera_valid_c, [self.id]) as bool
+        return result
+    end
+end
+
+public final typedef Camera = Camera3D
+
+public final fun begin_mode_3d(camera: Camera3D) -> void:
+    /// Begins 3D mode using the specified camera.
+    ///     @param camera: Camera - The camera to use for 3D rendering.
+    ///     @return: void - No return value.
+    if (begin_mode_3d_c == null):
+        throw "Function 'BeginMode3D' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(begin_mode_3d_c, [camera.id])
+    return null
+end
+
+public final fun end_mode_3d() -> void:
+    /// Ends 3D mode.
+    ///     @return: void - No return value.
+    if (end_mode_3d_c == null):
+        throw "Function 'EndMode3D' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(end_mode_3d_c, [])
+    return null
+end
+
+public final typedef struct Model {
+    private id: int,
+    final path: ?str
+}
+
+for Model:
+    public static final fun new(path: str) -> Model:
+        /// Loads a 3D model from the specified file path.
+        ///     @param path: str - The file path to the 3D model.
+        ///     @return: Model - A new Model instance.
+        load_model(path)
+    end
+
+    public final fun is_valid(self) -> bool:
+        /// Checks if the model is valid.
+        ///     @return: bool - True if the model is valid, false otherwise.
+        is_model_valid(self)
+    end
+
+    public final fun unload(self) -> void:
+        /// Unloads the model from memory.
+        ///     @return: void - No return value.
+        unload_model(self)
+    end
+end
+
+public final fun load_model(path: str) -> Model:
+    /// Loads a 3D model from the specified file path.
+    ///     @param path: str - The file path to the 3D model.
+    ///     @return: Model - A new Model instance.
+    if (load_model_c == null):
+        throw "Function 'bind_LoadModel' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    _path := libload.create_str_ptr(path)
+    if (_path == null):
+        throw "Invalid pointer: null" from "PointerError"
+    end
+    result_id: int = libload.call_fn(load_model_c, [_path]) as int
+    return Model { id = result_id, path = path }
+end
+
+public final fun unload_model(model: Model) -> void:
+    /// Unloads the model from memory.
+    ///     @param model: Model - The model to unload.
+    ///     @return: void - No return value.
+    if (unload_model_c == null):
+        throw "Function 'bind_UnloadModel' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_model_c, [model.id])
+    return null
+end
+
+public final fun unload_all_models() -> void:
+    /// Unloads all models from memory.
+    ///     @return: void - No return value.
+    if (unload_all_models_c == null):
+        throw "Function 'bind_UnloadAllModels' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(unload_all_models_c, [])
+    return null
+end
+
+public final fun is_model_valid(model: Model) -> bool:
+    /// Checks if the model is valid.
+    ///     @param model: Model - The model to check.
+    ///     @return: bool - True if the model is valid, false otherwise.
+    if (is_model_valid_c == null):
+        throw "Function 'bind_IsModelValid' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: bool = libload.call_fn(is_model_valid_c, [model.id]) as bool
+    return result
+end
+
+public final fun draw_model(
+    model: Model,
+    position: tuple[int | float; 3],
+    scale: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a 3D model at the specified position, scale, and color.
+    ///     @param model: Model - The 3D model to draw.
+    ///     @param position: tuple[int | float; 3] - The position to draw the model.
+    ///     @param scale: int | float - The scale of the model.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_model_c == null):
+        throw "Function 'DrawModel' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_model_c, [
+        model.id,
+        position[0] as float, position[1] as float, position[2] as float,
+        scale as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final fun draw_model_ex(
+    model: Model,
+    position: tuple[int | float; 3],
+    rotation_axis: tuple[int | float; 3],
+    rotation_angle: int | float,
+    scale: tuple[int | float; 3],
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a 3D model with extended parameters at the specified position, rotation, scale, and color.
+    ///     @param model: Model - The 3D model to draw.
+    ///     @param position: tuple[int | float; 3] - The position to draw the model.
+    ///     @param rotation_axis: tuple[int | float; 3] - The axis to rotate the model around.
+    ///     @param rotation_angle: int | float - The angle to rotate the model (in degrees).
+    ///     @param scale: tuple[int | float; 3] - The scale of the model in each axis.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_model_ex_c == null):
+        throw "Function 'DrawModelEx' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_model_ex_c, [
+        model.id,
+        position[0] as float, position[1] as float, position[2] as float,
+        rotation_axis[0] as float, rotation_axis[1] as float, rotation_axis[2] as float,
+        rotation_angle as float,
+        scale[0] as float, scale[1] as float, scale[2] as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final fun draw_model_wires(
+    model: Model,
+    position: tuple[int | float; 3],
+    scale: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a 3D model as wires at the specified position, scale, and color.
+    ///     @param model: Model - The 3D model to draw.
+    ///     @param position: tuple[int | float; 3] - The position to draw the model.
+    ///     @param scale: int | float - The scale of the model.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_model_wires_c == null):
+        throw "Function 'DrawModelWires' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_model_wires_c, [
+        model.id,
+        position[0] as float, position[1] as float, position[2] as float,
+        scale as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final fun draw_model_wires_ex(
+    model: Model,
+    position: tuple[int | float; 3],
+    rotation_axis: tuple[int | float; 3],
+    rotation_angle: int | float,
+    scale: tuple[int | float; 3],
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a 3D model as wires with extended parameters at the specified position, rotation, scale, and color.
+    ///     @param model: Model - The 3D model to draw.
+    ///     @param position: tuple[int | float; 3] - The position to draw the model.
+    ///     @param rotation_axis: tuple[int | float; 3] - The axis to rotate the model around.
+    ///     @param rotation_angle: int | float - The angle to rotate the model (in degrees).
+    ///     @param scale: tuple[int | float; 3] - The scale of the model in each axis.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_model_wires_ex_c == null):
+        throw "Function 'DrawModelWiresEx' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_model_wires_ex_c, [
+        model.id,
+        position[0] as float, position[1] as float, position[2] as float,
+        rotation_axis[0] as float, rotation_axis[1] as float, rotation_axis[2] as float,
+        rotation_angle as float,
+        scale[0] as float, scale[1] as float, scale[2] as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final fun draw_model_points(
+    model: Model,
+    position: tuple[int | float; 3],
+    scale: int | float,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a 3D model as points at the specified position, scale, and color.
+    ///     @param model: Model - The 3D model to draw.
+    ///     @param position: tuple[int | float; 3] - The position to draw the model.
+    ///     @param scale: int | float - The scale of the model.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_model_points_c == null):
+        throw "Function 'DrawModelPoints' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_model_points_c, [
+        model.id,
+        position[0] as float, position[1] as float, position[2] as float,
+        scale as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final fun draw_model_points_ex(
+    model: Model,
+    position: tuple[int | float; 3],
+    rotation_axis: tuple[int | float; 3],
+    rotation_angle: int | float,
+    scale: tuple[int | float; 3],
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a 3D model as points with extended parameters at the specified position, rotation, scale, and color.
+    ///     @param model: Model - The 3D model to draw.
+    ///     @param position: tuple[int | float; 3] - The position to draw the model.
+    ///     @param rotation_axis: tuple[int | float; 3] - The axis to rotate the model around.
+    ///     @param rotation_angle: int | float - The angle to rotate the model (in degrees).
+    ///     @param scale: tuple[int | float; 3] - The scale of the model in each axis.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_model_points_ex_c == null):
+        throw "Function 'DrawModelPointsEx' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_model_points_ex_c, [
+        model.id,
+        position[0] as float, position[1] as float, position[2] as float,
+        rotation_axis[0] as float, rotation_axis[1] as float, rotation_axis[2] as float,
+        rotation_angle as float,
+        scale[0] as float, scale[1] as float, scale[2] as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final BeginMode3D: function = begin_mode_3d
+public final EndMode3D: function = end_mode_3d
+public final LoadModel: function = load_model
+public final UnloadModel: function = unload_model
+public final UnloadAllModels: function = unload_all_models
+public final IsModelValid: function = is_model_valid
+public final DrawModel: function = draw_model
+public final DrawModelEx: function = draw_model_ex
+public final DrawModelWires: function = draw_model_wires
+public final DrawModelWiresEx: function = draw_model_wires_ex
+public final DrawModelPoints: function = draw_model_points
+public final DrawModelPointsEx: function = draw_model_points_ex
