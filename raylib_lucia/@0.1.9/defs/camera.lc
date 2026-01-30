@@ -205,7 +205,7 @@ public final fun end_mode_3d() -> void:
     return null
 end
 
-public final fun update_camera(camera: Camera, mode: int) -> void:
+public final fun update_camera(camera: Camera3D, mode: int) -> void:
     /// Updates the camera's position and orientation based on the specified mode.
     ///     @param camera: Camera - The camera to update.
     ///     @param mode: int - The update mode (CAMERA_CUSTOM, CAMERA_FREE, etc.).
@@ -218,7 +218,7 @@ public final fun update_camera(camera: Camera, mode: int) -> void:
 end
 
 public final fun update_camera_pro(
-    camera: Camera,
+    camera: Camera3D,
     movement: tuple[int | float; 3],
     rotation: tuple[int | float; 3],
     zoom: int | float,
