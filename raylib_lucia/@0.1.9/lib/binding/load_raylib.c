@@ -127,8 +127,10 @@ static void (*fp_SetAudioStreamPan)(AudioStream, float) = NULL;
 static void (*fp_TraceLog)(int, const char*, ...) = NULL;
 
 // 3D functions
+static void (*fp_UpdateCamera)(Camera*, int) = NULL;
+static void (*fp_UpdateCameraPro)(Camera*, Vector3, Vector3, float) = NULL;
+static void (*fp_BeginMode2D)(Camera2D) = NULL;
 static void (*fp_BeginMode3D)(Camera3D) = NULL;
-static void (*fp_EndMode3D)(void) = NULL;
 static Model (*fp_LoadModel)(const char*) = NULL;
 static void (*fp_UnloadModel)(Model) = NULL;
 static bool (*fp_IsModelValid)(Model) = NULL;
@@ -138,6 +140,10 @@ static void (*fp_DrawModelWires)(Model, Vector3, float, Color) = NULL;
 static void (*fp_DrawModelWiresEx)(Model, Vector3, Vector3, float, Vector3, Color) = NULL;
 static void (*fp_DrawModelPoints)(Model, Vector3, float, Color) = NULL;
 static void (*fp_DrawModelPointsEx)(Model, Vector3, Vector3, float, Vector3, Color) = NULL;
+static BoundingBox (*fp_GetModelBoundingBox)(Model) = NULL;
+static void (*fp_DrawBoundingBox)(BoundingBox, Color) = NULL;
+static bool (*fp_CheckCollisionBoxes)(BoundingBox, BoundingBox) = NULL;
+static bool (*fp_CheckCollisionBoxSphere)(BoundingBox, Vector3, float) = NULL;
 
 // Color functions
 static Color (*fp_Fade)(Color, float) = NULL;
@@ -251,8 +257,10 @@ static void load_raylib() {
     fp_TraceLog = get_symbol(raylib_lib, "TraceLog");
 
     // 3D functions
+    fp_UpdateCamera = get_symbol(raylib_lib, "UpdateCamera");
+    fp_UpdateCameraPro = get_symbol(raylib_lib, "UpdateCameraPro");
+    fp_BeginMode2D = get_symbol(raylib_lib, "BeginMode2D");
     fp_BeginMode3D = get_symbol(raylib_lib, "BeginMode3D");
-    fp_EndMode3D = get_symbol(raylib_lib, "EndMode3D");
     fp_LoadModel = get_symbol(raylib_lib, "LoadModel");
     fp_UnloadModel = get_symbol(raylib_lib, "UnloadModel");
     fp_IsModelValid = get_symbol(raylib_lib, "IsModelValid");
@@ -262,7 +270,11 @@ static void load_raylib() {
     fp_DrawModelWiresEx = get_symbol(raylib_lib, "DrawModelWiresEx");
     fp_DrawModelPoints = get_symbol(raylib_lib, "DrawModelPoints");
     fp_DrawModelPointsEx = get_symbol(raylib_lib, "DrawModelPointsEx");
-    
+    fp_GetModelBoundingBox = get_symbol(raylib_lib, "GetModelBoundingBox");
+    fp_DrawBoundingBox = get_symbol(raylib_lib, "DrawBoundingBox");
+    fp_CheckCollisionBoxes = get_symbol(raylib_lib, "CheckCollisionBoxes");
+    fp_CheckCollisionBoxSphere = get_symbol(raylib_lib, "CheckCollisionBoxSphere");
+
     // Color functions
     fp_Fade = get_symbol(raylib_lib, "Fade");
     fp_ColorToInt = get_symbol(raylib_lib, "ColorToInt");
@@ -367,8 +379,10 @@ RLAPI void TraceLog(int logLevel, const char* text, ...) {
 }
 
 // 3D functions
+RLAPI void UpdateCamera(Camera* camera, int mode) { load_raylib(); if(fp_UpdateCamera) fp_UpdateCamera(camera, mode); }
+RLAPI void UpdateCameraPro(Camera* camera, Vector3 movement, Vector3 rotation, float zoom) { load_raylib(); if(fp_UpdateCameraPro) fp_UpdateCameraPro(camera, movement, rotation, zoom); }
+RLAPI void BeginMode2D(Camera2D camera) { load_raylib(); if(fp_BeginMode2D) fp_BeginMode2D(camera); }
 RLAPI void BeginMode3D(Camera3D camera) { load_raylib(); if(fp_BeginMode3D) fp_BeginMode3D(camera); }
-RLAPI void EndMode3D(void) { load_raylib(); if(fp_EndMode3D) fp_EndMode3D(); }
 RLAPI Model LoadModel(const char* fileName) { load_raylib(); return fp_LoadModel?fp_LoadModel(fileName): (Model){0}; }
 RLAPI void UnloadModel(Model model) { load_raylib(); if(fp_UnloadModel) fp_UnloadModel(model); }
 RLAPI bool IsModelValid(Model model) { load_raylib(); return fp_IsModelValid?fp_IsModelValid(model): false; }
@@ -378,6 +392,10 @@ RLAPI void DrawModelWires(Model model, Vector3 position, float scale, Color tint
 RLAPI void DrawModelWiresEx(Model model, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint) { load_raylib(); if(fp_DrawModelWiresEx) fp_DrawModelWiresEx(model, position, rotationAxis, rotationAngle, scale, tint); }
 RLAPI void DrawModelPoints(Model model, Vector3 position, float scale, Color tint) { load_raylib(); if(fp_DrawModelPoints) fp_DrawModelPoints(model, position, scale, tint); }
 RLAPI void DrawModelPointsEx(Model model, Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color tint) { load_raylib(); if(fp_DrawModelPointsEx) fp_DrawModelPointsEx(model, position, rotationAxis, rotationAngle, scale, tint); }
+RLAPI BoundingBox GetModelBoundingBox(Model model) { load_raylib(); return fp_GetModelBoundingBox?fp_GetModelBoundingBox(model): (BoundingBox){0}; }
+RLAPI void DrawBoundingBox(BoundingBox box, Color color) { load_raylib(); if(fp_DrawBoundingBox) fp_DrawBoundingBox(box, color); }
+RLAPI bool CheckCollisionBoxes(BoundingBox box1, BoundingBox box2) { load_raylib(); return fp_CheckCollisionBoxes?fp_CheckCollisionBoxes(box1, box2): false; }
+RLAPI bool CheckCollisionBoxSphere(BoundingBox box, Vector3 center, float radius) { load_raylib(); return fp_CheckCollisionBoxSphere?fp_CheckCollisionBoxSphere(box, center, radius): false; }
 
 // Color functions
 RLAPI Color Fade(Color color, float alpha) { load_raylib(); return fp_Fade ? fp_Fade(color, alpha) : color; }

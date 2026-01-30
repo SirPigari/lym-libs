@@ -1,11 +1,3 @@
-private final create_camera_c: &int = libload.get_fn(lib_bind, "bind_CreateCamera", ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "int")
-private final set_camera_parameters_c: &int = libload.get_fn(lib_bind, "bind_SetCameraParameters", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "void")
-private final set_camera_projection_c: &int = libload.get_fn(lib_bind, "bind_SetCameraProjection", ["int", "int"], "void")
-private final is_camera_valid_c: &int = libload.get_fn(lib_bind, "bind_IsCameraValid", ["int"], "bool")
-
-private final begin_mode_3d_c: &int = libload.get_fn(lib_bind, "bind_BeginMode3D", ["int"], "void")
-private final end_mode_3d_c: &int = libload.get_fn(lib, "EndMode3D", [], "void")
-
 private final load_model_c: &int = libload.get_fn(lib_bind, "bind_LoadModel", ["str"], "int")
 private final is_model_valid_c: &int = libload.get_fn(lib_bind, "bind_IsModelValid", ["int"], "bool")
 private final unload_model_c: &int = libload.get_fn(lib_bind, "bind_UnloadModel", ["int"], "void")
@@ -18,107 +10,10 @@ private final draw_model_wires_ex_c: &int = libload.get_fn(lib_bind, "bind_DrawM
 private final draw_model_points_c: &int = libload.get_fn(lib_bind, "bind_DrawModelPoints", ["int", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
 private final draw_model_points_ex_c: &int = libload.get_fn(lib_bind, "bind_DrawModelPointsEx", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
 
-public final CAMERA_PERSPECTIVE: int = 0
-public final CAMERA_ORTHOGRAPHIC: int = 1
-
-public final typedef struct Camera3D {
-    private id: int
-}
-
-for Camera3D:
-    public static final fun new(position: tuple[int | float; 3], target: tuple[int | float; 3], up: tuple[int | float; 3], fovy: int | float) -> Camera3D:
-        /// Creates a new Camera instance with the specified parameters.
-        ///     @param position: tuple[int | float; 3] - The position of the camera in 3D space.
-        ///     @param target: tuple[int | float; 3] - The target point the camera is looking at.
-        ///     @param up: tuple[int | float; 3] - The up vector of the camera.
-        ///     @param fovy: int | float - The field of view in the Y direction (in degrees).
-        ///     @return: Camera - A new Camera instance.
-        if (create_camera_c == null):
-            throw "Function 'bind_CreateCamera' not found in the loaded library." from "FunctionNotFoundError"
-        end
-        result_id: int = libload.call_fn(create_camera_c, [
-            position[0] as float, position[1] as float, position[2] as float,
-            target[0] as float, target[1] as float, target[2] as float,
-            up[0] as float, up[1] as float, up[2] as float,
-            fovy as float
-        ]) as int
-        return Camera3D { id = result_id }
-    end
-
-    public final fun set_projection(self, projection: int) -> void:
-        /// Sets the projection type of the camera.
-        ///     @param projection: int - The projection type (CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC).
-        ///     @return: void - No return value.
-        if (set_camera_projection_c == null):
-            throw "Function 'bind_SetCameraProjection' not found in the loaded library." from "FunctionNotFoundError"
-        end
-        libload.call_fn(set_camera_projection_c, [
-            self.id,
-            projection
-        ])
-        return null
-    end
-
-    public final fun set_parameters(
-        self,
-        position: tuple[int | float; 3],
-        target: tuple[int | float; 3],
-        up: tuple[int | float; 3],
-        fovy: int | float,
-    ) -> void:
-        /// Sets the parameters of the camera.
-        ///     @param position: tuple[int | float; 3] - The position of the camera in 3D space.
-        ///     @param target: tuple[int | float; 3] - The target point the camera is looking at.
-        ///     @param up: tuple[int | float; 3] - The up vector of the camera.
-        ///     @param fovy: int | float - The field of view in the Y direction (in degrees).
-        ///     @param projection: int - The projection type (CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC).
-        ///     @return: void - No return value.
-        if (set_camera_parameters_c == null):
-            throw "Function 'bind_SetCameraParameters' not found in the loaded library." from "FunctionNotFoundError"
-        end
-        libload.call_fn(set_camera_parameters_c, [
-            self.id,
-            position[0] as float, position[1] as float, position[2] as float,
-            target[0] as float, target[1] as float, target[2] as float,
-            up[0] as float, up[1] as float, up[2] as float,
-            fovy as float
-        ])
-        return null
-    end
-
-    public final fun is_valid(self) -> bool:
-        /// Checks if the camera is valid.
-        ///     @return: bool - True if the camera is valid, false otherwise.
-        if (is_camera_valid_c == null):
-            throw "Function 'bind_IsCameraValid' not found in the loaded library." from "FunctionNotFoundError"
-        end
-        result: bool = libload.call_fn(is_camera_valid_c, [self.id]) as bool
-        return result
-    end
-end
-
-public final typedef Camera = Camera3D
-
-public final fun begin_mode_3d(camera: Camera3D) -> void:
-    /// Begins 3D mode using the specified camera.
-    ///     @param camera: Camera - The camera to use for 3D rendering.
-    ///     @return: void - No return value.
-    if (begin_mode_3d_c == null):
-        throw "Function 'BeginMode3D' not found in the loaded library." from "FunctionNotFoundError"
-    end
-    libload.call_fn(begin_mode_3d_c, [camera.id])
-    return null
-end
-
-public final fun end_mode_3d() -> void:
-    /// Ends 3D mode.
-    ///     @return: void - No return value.
-    if (end_mode_3d_c == null):
-        throw "Function 'EndMode3D' not found in the loaded library." from "FunctionNotFoundError"
-    end
-    libload.call_fn(end_mode_3d_c, [])
-    return null
-end
+private final get_model_bounding_box_c: &int = libload.get_fn(lib_bind, "bind_GetModelBoundingBox", ["int"], "str")
+private final draw_bounding_box_c: &int = libload.get_fn(lib_bind, "bind_DrawBoundingBox", ["float", "float", "float", "float", "float", "float", "byte", "byte", "byte", "byte"], "void")
+private final check_collision_boxes_c: &int = libload.get_fn(lib_bind, "bind_CheckCollisionBoxes", ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "bool")
+private final check_collision_box_sphere_c: &int = libload.get_fn(lib_bind, "bind_CheckCollisionBoxSphere", ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "bool")
 
 public final typedef struct Model {
     private id: int,
@@ -403,8 +298,91 @@ public final fun draw_model_points_ex(
     return null
 end
 
-public final BeginMode3D: function = begin_mode_3d
-public final EndMode3D: function = end_mode_3d
+public final typedef struct BoundingBox {
+    final min: tuple[float; 3],
+    final max: tuple[float; 3],
+}
+
+public final fun get_model_bounding_box(model: Model) -> BoundingBox:
+    /// Gets the bounding box of the model.
+    ///     @param model: Model - The model to get the bounding box for.
+    ///     @return: BoundingBox - A BoundingBox struct containing min and max points.
+    if (get_model_bounding_box_c == null):
+        throw "Function 'bind_GetModelBoundingBox' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: str = libload.parse_str_ptr(libload.call_fn(get_model_bounding_box_c, [model.id]))
+    parts: list[str] = result.split("|")
+    if (len(parts) != 6):
+        throw "Invalid bounding box format returned from library." from "ValueError"
+    end
+    return BoundingBox {
+        min = (parts[0] as float, parts[1] as float, parts[2] as float),
+        max = (parts[3] as float, parts[4] as float, parts[5] as float)
+    }
+end
+
+public final fun draw_bounding_box(
+    bounding_box: BoundingBox,
+    color: tuple[int; 4],
+) -> void:
+    /// Draws a bounding box defined by minimum and maximum points with the specified color.
+    ///     @param bounding_box: BoundingBox - A BoundingBox struct containing min and max points.
+    ///     @param color: tuple[int; 4] - A tuple of 4 integers representing RGBA color (0-255).
+    ///     @return: void - No return value.
+    if (draw_bounding_box_c == null):
+        throw "Function 'bind_DrawBoundingBox' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    if (len(color) != 4):
+        throw "Color must be a tuple of 4 integers (RGBA)." from "ValueError"
+    end
+    for (c in color):
+        if (c < 0 || c > 255):
+            throw "Color values must be in the range 0-255." from "ValueError"
+        end
+    end
+    libload.call_fn(draw_bounding_box_c, [
+        bounding_box.min[0] as float, bounding_box.min[1] as float, bounding_box.min[2] as float,
+        bounding_box.max[0] as float, bounding_box.max[1] as float, bounding_box.max[2] as float,
+        color[0], color[1], color[2], color[3]
+    ])
+    return null
+end
+
+public final fun check_collision_boxes(box1: BoundingBox, box2: BoundingBox) -> bool:
+    /// Checks for collision between two bounding boxes.
+    ///     @param box1: BoundingBox - The first bounding box.
+    ///     @param box2: BoundingBox - The second bounding box.
+    ///     @return: bool - True if the boxes collide, false otherwise.
+    if (check_collision_boxes_c == null):
+        throw "Function 'bind_CheckCollisionBoxes' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: bool = libload.call_fn(check_collision_boxes_c, [
+        box1.min[0] as float, box1.min[1] as float, box1.min[2] as float,
+        box1.max[0] as float, box1.max[1] as float, box1.max[2] as float,
+        box2.min[0] as float, box2.min[1] as float, box2.min[2] as float,
+        box2.max[0] as float, box2.max[1] as float, box2.max[2] as float
+    ]) as bool
+    return result
+end
+
+public final fun check_collision_box_sphere(box: BoundingBox, center: tuple[int | float; 3], radius: int | float) -> bool:
+    /// Checks for collision between a bounding box and a sphere.
+    ///     @param box: BoundingBox - The bounding box.
+    ///     @param center: tuple[int | float; 3] - The center of the sphere.
+    ///     @param radius: int | float - The radius of the sphere.
+    ///     @return: bool - True if the box and sphere collide, false otherwise.
+    if (check_collision_box_sphere_c == null):
+        throw "Function 'bind_CheckCollisionBoxSphere' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    result: bool = libload.call_fn(check_collision_box_sphere_c, [
+        box.min[0] as float, box.min[1] as float, box.min[2] as float,
+        box.max[0] as float, box.max[1] as float, box.max[2] as float,
+        center[0] as float, center[1] as float, center[2] as float,
+        radius as float
+    ]) as bool
+    return result
+end
+
 public final LoadModel: function = load_model
 public final UnloadModel: function = unload_model
 public final UnloadAllModels: function = unload_all_models
@@ -415,3 +393,7 @@ public final DrawModelWires: function = draw_model_wires
 public final DrawModelWiresEx: function = draw_model_wires_ex
 public final DrawModelPoints: function = draw_model_points
 public final DrawModelPointsEx: function = draw_model_points_ex
+public final GetModelBoundingBox: function = get_model_bounding_box
+public final DrawBoundingBox: function = draw_bounding_box
+public final CheckCollisionBoxes: function = check_collision_boxes
+public final CheckCollisionBoxSphere: function = check_collision_box_sphere

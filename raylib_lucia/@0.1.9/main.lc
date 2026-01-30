@@ -63,7 +63,8 @@ end
 #include "defs/audio.lc"
 #include "defs/colors.lc"
 #include "defs/image.lc"
-#include "defs/3d.lc"
+#include "defs/camera.lc"
+#include "defs/model.lc"
 
 // Clean up
 lib = libload.unload_lib(lib)

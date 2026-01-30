@@ -25,7 +25,7 @@
 
 // unsafe return buffer
 // if fails its your skill issue
-static char retbuf[64];
+static char retbuf[128];
 
 // audio stuff
 #include "audio.c"

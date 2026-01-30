@@ -1,0 +1,249 @@
+private final create_camera_2d_c: &int = libload.get_fn(lib_bind, "bind_CreateCamera2D", ["float", "float", "float", "float", "float", "float"], "int")
+private final set_camera_parameters_2d_c: &int = libload.get_fn(lib_bind, "bind_SetCameraParameters2D", ["int", "float", "float", "float", "float", "float", "float"], "void")
+private final is_camera_valid_2d_c: &int = libload.get_fn(lib_bind, "bind_IsCameraValid2D", ["int"], "bool")
+
+private final create_camera_3d_c: &int = libload.get_fn(lib_bind, "bind_CreateCamera3D", ["float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "int")
+private final set_camera_parameters_3d_c: &int = libload.get_fn(lib_bind, "bind_SetCameraParameters3D", ["int", "float", "float", "float", "float", "float", "float", "float", "float", "float", "float"], "void")
+private final set_camera_projection_3d_c: &int = libload.get_fn(lib_bind, "bind_SetCameraProjection3D", ["int", "int"], "void")
+private final is_camera_valid_3d_c: &int = libload.get_fn(lib_bind, "bind_IsCameraValid3D", ["int"], "bool")
+
+private final update_camera_c: &int = libload.get_fn(lib_bind, "bind_UpdateCamera", ["int", "int"], "void")
+private final update_camera_pro_c: &int = libload.get_fn(lib_bind, "bind_UpdateCameraPro", ["int", "float", "float", "float", "float", "float", "float", "float"], "void")
+
+private final begin_mode_2d_c: &int = libload.get_fn(lib_bind, "bind_BeginMode2D", ["int"], "void")
+private final end_mode_2d_c: &int = libload.get_fn(lib, "EndMode2D", [], "void")
+private final begin_mode_3d_c: &int = libload.get_fn(lib_bind, "bind_BeginMode3D", ["int"], "void")
+private final end_mode_3d_c: &int = libload.get_fn(lib, "EndMode3D", [], "void")
+
+public final CAMERA_CUSTOM: int = 0             // Camera custom, controlled by user (UpdateCamera() does nothing)
+public final CAMERA_FREE: int = 1               // Camera free mode
+public final CAMERA_ORBITAL: int = 2            // Camera orbital, around target, zoom supported
+public final CAMERA_FIRST_PERSON: int = 3       // Camera first person
+public final CAMERA_THIRD_PERSON: int = 4       // Camera third person
+
+public final CAMERA_PERSPECTIVE: int = 0
+public final CAMERA_ORTHOGRAPHIC: int = 1
+
+public final typedef struct Camera2D {
+    private id: int
+}
+
+for Camera2D:
+    public static final fun new(offset: tuple[int | float; 2], target: tuple[int | float; 2], rotation: int | float, zoom: int | float) -> Camera2D:
+        /// Creates a new Camera2D instance with the specified parameters.
+        ///     @param offset: tuple[int | float; 2] - The offset of the camera.
+        ///     @param target: tuple[int | float; 2] - The target point the camera is looking at.
+        ///     @param rotation: int | float - The rotation of the camera in degrees.
+        ///     @param zoom: int | float - The zoom level of the camera.
+        ///     @return: Camera2D - A new Camera2D instance.
+        if (create_camera_2d_c == null):
+            throw "Function 'bind_CreateCamera2D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        result_id: int = libload.call_fn(create_camera_2d_c, [
+            offset[0] as float, offset[1] as float,
+            target[0] as float, target[1] as float,
+            rotation as float,
+            zoom as float
+        ]) as int
+        return Camera2D { id = result_id }
+    end
+
+    public final fun set_parameters(
+        self,
+        offset: tuple[int | float; 2],
+        target: tuple[int | float; 2],
+        rotation: int | float,
+        zoom: int | float,
+    ) -> void:
+        /// Sets the parameters of the camera.
+        ///     @param offset: tuple[int | float; 2] - The offset of the camera.
+        ///     @param target: tuple[int | float; 2] - The target point the camera is looking at.
+        ///     @param rotation: int | float - The rotation of the camera in degrees.
+        ///     @param zoom: int | float - The zoom level of the camera.
+        ///     @return: void - No return value.
+        if (set_camera_parameters_2d_c == null):
+            throw "Function 'bind_SetCameraParameters2D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(set_camera_parameters_2d_c, [
+            self.id,
+            offset[0] as float, offset[1] as float,
+            target[0] as float, target[1] as float,
+            rotation as float,
+            zoom as float
+        ])
+        return null
+    end
+
+    public final fun is_valid(self) -> bool:
+        /// Checks if the camera is valid.
+        ///     @return: bool - True if the camera is valid, false otherwise.
+        if (is_camera_valid_2d_c == null):
+            throw "Function 'bind_IsCameraValid2D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        result: bool = libload.call_fn(is_camera_valid_2d_c, [self.id]) as bool
+        return result
+    end
+end
+
+public final typedef struct Camera3D {
+    private id: int
+}
+
+for Camera3D:
+    public static final fun new(position: tuple[int | float; 3], target: tuple[int | float; 3], up: tuple[int | float; 3], fovy: int | float) -> Camera3D:
+        /// Creates a new Camera instance with the specified parameters.
+        ///     @param position: tuple[int | float; 3] - The position of the camera in 3D space.
+        ///     @param target: tuple[int | float; 3] - The target point the camera is looking at.
+        ///     @param up: tuple[int | float; 3] - The up vector of the camera.
+        ///     @param fovy: int | float - The field of view in the Y direction (in degrees).
+        ///     @return: Camera - A new Camera instance.
+        if (create_camera_3d_c == null):
+            throw "Function 'bind_CreateCamera3D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        result_id: int = libload.call_fn(create_camera_3d_c, [
+            position[0] as float, position[1] as float, position[2] as float,
+            target[0] as float, target[1] as float, target[2] as float,
+            up[0] as float, up[1] as float, up[2] as float,
+            fovy as float
+        ]) as int
+        return Camera3D { id = result_id }
+    end
+
+    public final fun set_projection(self, projection: int) -> void:
+        /// Sets the projection type of the camera.
+        ///     @param projection: int - The projection type (CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC).
+        ///     @return: void - No return value.
+        if (set_camera_projection_3d_c == null):
+            throw "Function 'bind_SetCameraProjection3D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(set_camera_projection_3d_c, [
+            self.id,
+            projection
+        ])
+        return null
+    end
+
+    public final fun set_parameters(
+        self,
+        position: tuple[int | float; 3],
+        target: tuple[int | float; 3],
+        up: tuple[int | float; 3],
+        fovy: int | float,
+    ) -> void:
+        /// Sets the parameters of the camera.
+        ///     @param position: tuple[int | float; 3] - The position of the camera in 3D space.
+        ///     @param target: tuple[int | float; 3] - The target point the camera is looking at.
+        ///     @param up: tuple[int | float; 3] - The up vector of the camera.
+        ///     @param fovy: int | float - The field of view in the Y direction (in degrees).
+        ///     @param projection: int - The projection type (CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC).
+        ///     @return: void - No return value.
+        if (set_camera_parameters_3d_c == null):
+            throw "Function 'bind_SetCameraParameters3D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        libload.call_fn(set_camera_parameters_3d_c, [
+            self.id,
+            position[0] as float, position[1] as float, position[2] as float,
+            target[0] as float, target[1] as float, target[2] as float,
+            up[0] as float, up[1] as float, up[2] as float,
+            fovy as float
+        ])
+        return null
+    end
+
+    public final fun is_valid(self) -> bool:
+        /// Checks if the camera is valid.
+        ///     @return: bool - True if the camera is valid, false otherwise.
+        if (is_camera_valid_3d_c == null):
+            throw "Function 'bind_IsCameraValid3D' not found in the loaded library." from "FunctionNotFoundError"
+        end
+        result: bool = libload.call_fn(is_camera_valid_3d_c, [self.id]) as bool
+        return result
+    end
+end
+
+public final typedef Camera = Camera3D
+
+public final fun begin_mode_2d(camera: Camera2D) -> void:
+    /// Begins 2D mode using the specified camera.
+    ///     @param camera: Camera2D - The camera to use for 2D rendering.
+    ///     @return: void - No return value.
+    if (begin_mode_2d_c == null):
+        throw "Function 'bind_BeginMode2D' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(begin_mode_2d_c, [camera.id])
+    return null
+end
+
+public final fun end_mode_2d() -> void:
+    /// Ends 2D mode.
+    ///     @return: void - No return value.
+    if (end_mode_2d_c == null):
+        throw "Function 'EndMode2D' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(end_mode_2d_c, [])
+    return null
+end
+
+public final fun begin_mode_3d(camera: Camera3D) -> void:
+    /// Begins 3D mode using the specified camera.
+    ///     @param camera: Camera - The camera to use for 3D rendering.
+    ///     @return: void - No return value.
+    if (begin_mode_3d_c == null):
+        throw "Function 'BeginMode3D' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(begin_mode_3d_c, [camera.id])
+    return null
+end
+
+public final fun end_mode_3d() -> void:
+    /// Ends 3D mode.
+    ///     @return: void - No return value.
+    if (end_mode_3d_c == null):
+        throw "Function 'EndMode3D' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(end_mode_3d_c, [])
+    return null
+end
+
+public final fun update_camera(camera: Camera, mode: int) -> void:
+    /// Updates the camera's position and orientation based on the specified mode.
+    ///     @param camera: Camera - The camera to update.
+    ///     @param mode: int - The update mode (CAMERA_CUSTOM, CAMERA_FREE, etc.).
+    ///     @return: void - No return value.
+    if (update_camera_c == null):
+        throw "Function 'bind_UpdateCamera' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(update_camera_c, [camera.id, mode])
+    return null
+end
+
+public final fun update_camera_pro(
+    camera: Camera,
+    movement: tuple[int | float; 3],
+    rotation: tuple[int | float; 3],
+    zoom: int | float,
+) -> void:
+    /// Updates the camera's position and orientation using the provided vectors.
+    ///     @param camera: Camera - The camera to update.
+    ///     @param movement: tuple[int | float; 3] - The movement vector of the camera.
+    ///     @param rotation: tuple[int | float; 3] - The rotation vector of the camera.
+    ///     @param zoom: int | float - The zoom level of the camera.
+    ///     @return: void - No return value.
+    if (update_camera_pro_c == null):
+        throw "Function 'bind_UpdateCameraPro' not found in the loaded library." from "FunctionNotFoundError"
+    end
+    libload.call_fn(update_camera_pro_c, [
+        camera.id,
+        movement[0] as float, movement[1] as float, movement[2] as float,
+        rotation[0] as float, rotation[1] as float, rotation[2] as float,
+        zoom as float
+    ])
+    return null
+end
+
+public final BeginMode2D: function = begin_mode_2d
+public final EndMode2D: function = end_mode_2d
+public final BeginMode3D: function = begin_mode_3d
+public final EndMode3D: function = end_mode_3d
+public final UpdateCamera: function = update_camera
+public final UpdateCameraPro: function = update_camera_pro
