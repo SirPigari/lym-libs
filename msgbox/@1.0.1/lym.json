@@ -1,0 +1,25 @@
+{
+    "supported_platforms": [
+        "windows",
+        "linux",
+        "macos"
+    ],
+    "platform_ignore": {
+        "windows": [
+            "*.so",
+            "*.dylib"
+        ],
+        "linux": [
+            "*.dll",
+            "*.dylib"
+        ],
+        "macos": [
+            "*.dll",
+            "*.so"
+        ]
+    },
+    "options": {
+        "overwrite_existing": false,
+        "update_fresh": false
+    }
+}
