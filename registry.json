@@ -8,6 +8,16 @@
         "hello-world"
       ]
     },
+    "languages": {
+      "authors": [
+        "Markofwitch"
+      ],
+      "description": "Language defines for Lucia.",
+      "latest_version": "0.1.0",
+      "names": [
+        "languages"
+      ]
+    },
     "msgbox": {
       "authors": [
         "Markofwitch"
