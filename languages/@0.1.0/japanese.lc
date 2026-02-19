@@ -1,0 +1,9 @@
+#ifndef LANGUAGES_JAPANESE
+#define LANGUAGES_JAPANESE
+
+#include "./japanese_hiragana.lc"
+#include "./japanese_katakana.lc"
+#include "./japanese_kanji.lc"
+#include "./japanese_romaji.lc"
+
+#endif // LANGUAGES_JAPANESE

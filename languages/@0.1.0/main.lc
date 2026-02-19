@@ -1,0 +1,10 @@
+#ifndef LANGUAGES
+#define LANGUAGES
+
+#include "./czech.lc"
+#include "./english_uk.lc"
+#include "./english_us.lc"
+#include "./japanese.lc"
+#include "./slovak.lc"
+
+#endif // LANGUAGES

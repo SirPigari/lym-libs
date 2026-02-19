@@ -1,0 +1,11 @@
+#ifndef LANGUAGES_ENGLISH_US
+#define LANGUAGES_ENGLISH_US
+
+#define LANGUAGES_NAME "English (United States)"
+#define LANGUAGES_NAME_ENGLISH "English (United States)"
+#define LANGUAGES_CODE "en-US"
+#define LANGUAGES_LOCALE "en_US.UTF-8"
+
+/* Since Lucia is already in English, we don't need to translate anything. */
+
+#endif // LANGUAGES_ENGLISH_US

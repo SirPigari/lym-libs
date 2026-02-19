@@ -1,0 +1,73 @@
+#ifndef LANGUAGES_JAPANESE_ROMAJI
+#define LANGUAGES_JAPANESE_ROMAJI
+
+#define LANGUAGES_NAME "Nihongo"
+#define LANGUAGES_NAME_ENGLISH "Japanese (Romaji)"
+#define LANGUAGES_CODE "ja-JP"
+#define LANGUAGES_LOCALE "ja_JP.UTF-8"
+
+// keywords
+#alias moshi if
+#alias samonakereba else
+#alias noaida while
+#alias doko where
+#alias teigi fun
+#alias seisei gen
+#alias modoru return
+#alias shutsuryoku export
+#alias nageru throw
+#alias owari end
+#alias tsukamaeru catch
+#alias tamesu try
+#alias seiteki static
+#alias kou public
+#alias watashi private
+#alias saishuu final
+#alias kahen mutable
+#alias sorekara then
+#alias no_tame for
+#alias toshite as
+#alias kara from
+#alias inpooto import
+#alias tsukau import
+#alias naka in
+#alias wasureru forget
+#alias katsu and
+#alias matawa or
+#alias nai not
+#alias dewa_nai isnt
+#alias dearu is
+#alias hikaku match
+#alias chuudan break
+#alias tsuzukeru continue
+#alias enki defer
+#alias han_i scope
+#alias tsuuka pass
+#alias kata typedef
+#alias rekkyou enum
+#alias kouzoutai struct
+
+// types
+#alias nashi void
+#alias nini any
+#alias seisuu int
+#alias fudou float
+#alias ronri bool
+#alias mojiretsu str
+#alias chizu map
+#alias risuto list
+#alias kansuu function
+#alias jeneretaa generator
+#alias baito bytes
+#alias tapuru tuple
+#alias kata type
+#alias jidou auto
+#alias jissou impl
+#alias jissousuru impl
+
+// literals
+#alias mu null
+#alias shin true
+#alias gi false
+
+#endif // LANGUAGES_JAPANESE_ROMAJI

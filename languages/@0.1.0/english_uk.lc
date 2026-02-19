@@ -1,0 +1,18 @@
+#ifndef LANGUAGES_ENGLISH_UK
+#define LANGUAGES_ENGLISH_UK
+
+#define LANGUAGES_NAME "English (United Kingdom)"
+#define LANGUAGES_NAME_ENGLISH "English (United Kingdom)"
+#define LANGUAGES_CODE "en-GB"
+#define LANGUAGES_LOCALE "en_GB.UTF-8"
+
+// aliases, not much to change from US English, but we can at least make it more British
+
+#alias otherwise else
+#alias whilst while
+#alias nil null
+#alias truth true
+#alias falsehood false
+#alias colour color
+
+#endif // LANGUAGES_ENGLISH_UK
