@@ -1,0 +1,73 @@
+#ifndef LANGUAGES_JAPANESE_KANJI
+#define LANGUAGES_JAPANESE_KANJI
+
+#define LANGUAGES_NAME "日本語"
+#define LANGUAGES_NAME_ENGLISH "Japanese (Kanji)"
+#define LANGUAGES_CODE "ja-JP"
+#define LANGUAGES_LOCALE "ja_JP.UTF-8"
+
+// keywords
+#alias もし if
+#alias さもなければ else
+#alias の間 while
+#alias どこ where
+#alias 定義 fun
+#alias 生成 gen
+#alias 戻る return
+#alias 出力 export
+#alias 投げる throw
+#alias 終わり end
+#alias 捕まえる catch
+#alias 試す try
+#alias 静的 static
+#alias 公 public
+#alias 私 private
+#alias 最終 final
+#alias 可変 mutable
+#alias それから then
+#alias のため for
+#alias として as
+#alias から from
+#alias インポート import
+#alias 使う import
+#alias 中 in
+#alias 忘れる forget
+#alias かつ and
+#alias または or
+#alias ない not
+#alias ではない isnt
+#alias である is
+#alias 比較 match
+#alias 中断 break
+#alias 続ける continue
+#alias 延期 defer
+#alias 範囲 scope
+#alias 通過 pass
+#alias 型 typedef
+#alias 列挙 enum
+#alias 構造体 struct
+
+// types
+#alias 無し void
+#alias 任意 any
+#alias 整数 int
+#alias 浮動 float
+#alias 論理 bool
+#alias 文字列 str
+#alias 地図 map
+#alias リスト list
+#alias 関数 function
+#alias ジェネレータ generator
+#alias バイト bytes
+#alias タプル tuple
+#alias 型 type
+#alias 自動 auto
+#alias 実装 impl
+#alias 実装する impl
+
+// literals
+#alias 無 null
+#alias 真 true
+#alias 偽 false
+
+#endif // LANGUAGES_JAPANESE_KANJI

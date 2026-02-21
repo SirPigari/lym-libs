@@ -1,0 +1,76 @@
+// ============================
+// JAPANESE KATAKANA
+// ============================
+#ifndef LANGUAGES_JAPANESE_KATAKANA
+#define LANGUAGES_JAPANESE_KATAKANA
+
+#define LANGUAGES_NAME "ニホンゴ"
+#define LANGUAGES_NAME_ENGLISH "Japanese (Katakana)"
+#define LANGUAGES_CODE "ja-JP"
+#define LANGUAGES_LOCALE "ja_JP.UTF-8"
+
+// keywords
+#alias モシ if
+#alias サモナケレバ else
+#alias ノアイダ while
+#alias ドコ where
+#alias テイギ fun
+#alias セイセイ gen
+#alias モドル return
+#alias シュツリョク export
+#alias ナゲル throw
+#alias オワリ end
+#alias ツカマエル catch
+#alias タメス try
+#alias セイテキ static
+#alias コウ public
+#alias ワタシ private
+#alias サイシュウ final
+#alias カヘン mutable
+#alias ソレカラ then
+#alias ノタメ for
+#alias トシテ as
+#alias カラ from
+#alias インポート import
+#alias ツカウ import
+#alias ナカ in
+#alias ワスレル forget
+#alias カツ and
+#alias マタハ or
+#alias ナイ not
+#alias デワナイ isnt
+#alias デアル is
+#alias ヒカク match
+#alias チュウダン break
+#alias ツヅケル continue
+#alias エンキ defer
+#alias ハンイ scope
+#alias ツウカ pass
+#alias カタ typedef
+#alias レッキョ enum
+#alias コウゾウタイ struct
+
+// types
+#alias ナシ void
+#alias ニンイ any
+#alias セイスウ int
+#alias フドウ float
+#alias ロンリ bool
+#alias モジレツ str
+#alias チズ map
+#alias リスト list
+#alias カンスウ function
+#alias ジェネレーター generator
+#alias バイト bytes
+#alias タプル tuple
+#alias カタ type
+#alias ジドウ auto
+#alias ジッソウ impl
+#alias ジッソウスル impl
+
+// literals
+#alias ム null
+#alias シン true
+#alias ギ false
+
+#endif // LANGUAGES_JAPANESE_KATAKANA

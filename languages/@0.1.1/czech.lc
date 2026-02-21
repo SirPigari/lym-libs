@@ -1,0 +1,104 @@
+#ifndef LANGUAGES_CZECH
+#define LANGUAGES_CZECH
+
+#define LANGUAGES_NAME "Čeština"
+#define LANGUAGES_NAME_ENGLISH "Czech"
+#define LANGUAGES_CODE "cs-CZ"
+#define LANGUAGES_LOCALE "cs_CZ.UTF-8"
+
+// keywords
+
+#alias pokud if
+#alias jinak else
+#alias dokud while
+#alias kde where
+#alias definuj fun
+#alias generuj gen
+#alias vrat return
+#alias exportuj export
+#alias vyhod throw
+#alias vyhoď throw
+#alias konec end
+#alias chyt catch
+#alias chyť catch
+#alias zkus try
+#alias zkous try
+#alias staticky static
+#alias statický static
+#alias verejny public
+#alias veřejný public
+#alias soukromy private
+#alias soukromý private
+#alias finalni final
+#alias finální final
+#alias mutabilni mutable
+#alias mutabilní mutable
+#alias pak then
+#alias pro for
+#alias jako as
+#alias z from
+#alias importuj import
+#alias pouzij import
+#alias použij import
+#alias v in
+#alias zapomen forget
+#alias zapomeň forget
+#alias smaz forget
+#alias smaž forget
+#alias a and
+#alias nebo or
+#alias ne not
+#alias neni isnt
+#alias není isnt
+#alias je is
+#alias porovnej match
+#alias prerus break
+#alias přeruš break
+#alias prerusit break
+#alias přerušit break
+#alias pokracuj continue
+#alias pokračuj continue
+#alias odloz defer
+#alias odlož defer
+#alias rozsah scope
+#alias dal pass
+#alias dál pass
+#alias definujtyp typedef
+#alias enumerace enum
+#alias struktura struct
+
+// types
+
+#alias zadny void
+#alias žádný void
+#alias cokoliv any
+#alias cokoli any
+#alias integer int
+#alias desetinny float
+#alias desetinný float
+#alias logicky bool
+#alias logický bool
+#alias retezec str
+#alias řetězec str
+#alias mapa map
+#alias seznam list
+#alias funkce function
+#alias generátor generator
+#alias bajty bytes
+#alias ntice tuple
+#alias ntice tuple
+#alias typ type
+#alias automatický auto
+#alias automaticky auto
+#alias implementace impl
+#alias implementuje impl
+
+// literals
+
+#alias nic null
+#alias pravda true
+#alias nepravda false
+#alias pravdivost true
+#alias nepravdivost false
+
+#endif // LANGUAGES_CZECH

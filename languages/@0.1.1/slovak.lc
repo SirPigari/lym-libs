@@ -1,0 +1,111 @@
+#ifndef LANGUAGES_SLOVAK
+#define LANGUAGES_SLOVAK
+
+#define LANGUAGES_NAME "Slovenčina"
+#define LANGUAGES_NAME_ENGLISH "Slovak"
+#define LANGUAGES_CODE "sk-SK"
+#define LANGUAGES_LOCALE "sk_SK.UTF-8"
+
+// aliases
+
+// keywords
+
+#alias ak if
+#alias inak else
+#alias kým while
+#alias kym while
+#alias pokial while
+#alias kde where
+#alias definuj fun
+#alias generuj gen
+#alias vrat return
+#alias vráť return
+#alias exportuj export
+#alias vyhod throw
+#alias vyhoď throw
+#alias koniec end
+#alias chyť catch
+#alias chyt catch
+#alias zkus try
+#alias zkús try
+#alias vyzkusaj try
+#alias vyzkúšaj try
+#alias statický static
+#alias verejny public
+#alias verejný public
+#alias sukromny private
+#alias soukromý private
+#alias finalny final
+#alias finálny final
+#alias mutabilny mutable
+#alias mutabilný mutable
+#alias mutovatelny mutable
+#alias mutovatelný mutable
+#alias potom then
+#alias pre for
+#alias ako as
+#alias z from
+#alias importuj import
+#alias pouzi import
+#alias použi import
+#alias v in
+#alias zabudni forget
+#alias vymaz forget
+#alias vymaž forget
+#alias a and
+#alias alebo or
+#alias ne not
+#alias nieje isnt
+#alias je is
+#alias porovnaj match
+#alias prerus break
+#alias preruš break
+#alias pokracuj continue
+#alias pokračuj continue
+#alias odloz defer
+#alias odlož defer
+#alias rozsah scope
+#alias dalej pass
+#alias ďalej pass
+#alias definujtyp typedef
+#alias enumeracia enum
+#alias enumerácia enum
+#alias struktura struct
+#alias štruktúra struct
+
+// types
+
+#alias ziadny void
+#alias žiadny void
+#alias hocico any
+#alias hocičo any
+#alias integer int
+#alias desatinny float
+#alias desatinný float
+#alias logicky bool
+#alias logický bool
+#alias retazec str
+#alias reťazec str
+#alias mapa map
+#alias zoznam list
+#alias funkcia function
+#alias generátor generator
+#alias bajty bytes
+#alias ntica tuple
+#alias typ type
+#alias automaticky auto
+#alias automatický auto
+#alias implementacia impl
+#alias implementácia impl
+#alias implementuje impl
+
+// literals
+
+#alias nic null
+#alias nič null
+#alias pravda true
+#alias nepravda false
+#alias pravdivost true
+#alias nepravdivost false
+
+#endif // LANGUAGES_SLOVAK
